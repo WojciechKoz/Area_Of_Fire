@@ -6,16 +6,28 @@ class Map {
   ArrayList<Wall> walls = new ArrayList<Wall>();
   Point relative = new Point(0,0);
   
+  void add_rect(Point corner1, Point corner2) {
+    walls.add(new Wall(corner1, new Point(corner2.x, corner1.y), corner2));
+    walls.add(new Wall(corner2, new Point(corner1.x, corner2.y), corner1));
+  }
+  
   Map() {
     _width = 2500;
     _height = 1000;
-    
+    add_rect(new Point(230, 50), new Point(260, 480) );
+    add_rect(new Point(260, 50), new Point(800, 80)  );
+    add_rect(new Point(800, 80),  new Point(770, 480));
+    add_rect(new Point(260, 480), new Point(350, 700)); 
+    add_rect(new Point(770, 480), new Point(710, 700));
+    add_rect(new Point(360, 200), new Point(670, 300));
+/*
     walls.add(new Wall(new Point(230, 50), new Point(260, 50), new Point(260, 480)));
     walls.add(new Wall(new Point(260, 50), new Point(800, 50), new Point(800, 80)));
     walls.add(new Wall(new Point(800, 80), new Point(800, 500), new Point(770, 480)));
     walls.add(new Wall(new Point(260, 480), new Point(230, 500), new Point(350, 700))); 
     walls.add(new Wall(new Point(770, 480), new Point(800, 500), new Point(710, 700)));
     walls.add(new Wall(new Point(360, 200), new Point(670, 200), new Point(670, 300)));
+    */
   }
   
   void print_map(Player observer) {
