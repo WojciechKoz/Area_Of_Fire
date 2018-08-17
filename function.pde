@@ -10,6 +10,43 @@ float change_y(float q) {
   return 1;
 }
 
+Point line_intersection_with_section(Point A, Point B, Point C, Point D) {
+  if(A.x == B.x) {
+     float a2 = (D.y - C.y) / (D.x - C.x); 
+     float b2 = C.y - a2 * C.x;
+     
+     float y = a2*A.x + b2;
+     
+     if(check_inter(C.x, C.y, D.x, D.y, A.x, y))
+       return new Point(A.x, y);
+  }
+  if(C.x == D.x) {
+     float a1 = (B.y - A.y) / (B.x - A.x); 
+     float b1 = A.y - a1 * A.x;
+     
+     float y = a1*C.x + b1;
+     
+     if(check_inter(C.x, C.y, D.x, D.y, C.x, y))
+       return new Point(C.x, y);
+  }
+  
+  //  
+  float a1 = (B.y - A.y) / (B.x - A.x); 
+  float b1 = A.y - a1 * A.x;
+  
+  float a2 = (D.y - C.y) / (D.x - C.x); 
+  float b2 = C.y - a2 * C.x;
+  
+  float x = (b2 - b1) / (a1 - a2);
+  float y = a1*x + b1;
+  
+  if(check_inter(C.x, C.y, D.x, D.y, x, y)) {
+     return new Point(x, y);
+  }
+  
+  return B;
+}
+
 Point sections_intersection(Point A, Point B, Point C, Point D) {
   if(A.x == B.x) {
      float a2 = (D.y - C.y) / (D.x - C.x); 
@@ -146,7 +183,6 @@ void bots_moves() {
     }
   }
 }
-
 
 
 void draw_hp(float hp, float max) {

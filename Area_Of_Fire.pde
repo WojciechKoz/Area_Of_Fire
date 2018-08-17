@@ -29,6 +29,8 @@ void setup() {
   menu();
   
   frameRate(50);
+  
+  //surface.setResizable(true);
 }
 
 

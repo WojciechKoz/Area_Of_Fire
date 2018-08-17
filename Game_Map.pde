@@ -7,15 +7,15 @@ class Map {
   Point relative = new Point(0,0);
   
   Map() {
-    _width = 1000;
+    _width = 2500;
     _height = 1000;
     
-    walls.add(new Wall(new Point(230, 50), new Point(260, 50), new Point(260, 480), new Point(230, 500)));
-    walls.add(new Wall(new Point(260, 50), new Point(800, 50), new Point(800, 80), new Point(260, 80)));
-    walls.add(new Wall(new Point(800, 80), new Point(800, 500), new Point(770, 480), new Point(770, 80)));
-    walls.add(new Wall(new Point(260, 480), new Point(230, 500), new Point(350, 700), new Point(380, 680))); 
-    walls.add(new Wall(new Point(770, 480), new Point(800, 500), new Point(710, 700), new Point(680, 680)));
-    walls.add(new Wall(new Point(360, 200), new Point(670, 200), new Point(670, 300), new Point(360, 300)));
+    walls.add(new Wall(new Point(230, 50), new Point(260, 50), new Point(260, 480)));
+    walls.add(new Wall(new Point(260, 50), new Point(800, 50), new Point(800, 80)));
+    walls.add(new Wall(new Point(800, 80), new Point(800, 500), new Point(770, 480)));
+    walls.add(new Wall(new Point(260, 480), new Point(230, 500), new Point(350, 700))); 
+    walls.add(new Wall(new Point(770, 480), new Point(800, 500), new Point(710, 700)));
+    walls.add(new Wall(new Point(360, 200), new Point(670, 200), new Point(670, 300)));
   }
   
   void print_map(Player observer) {
@@ -39,11 +39,11 @@ class Map {
   
   boolean empty_space(float Px, float Py, float r) {
     for(Wall w: walls) {
-      for(int i = 0; i < 4; i++) {
+      for(int i = 0; i < 3; i++) {
         Point before; 
         
         if(i == 0) {
-           before = w.points.get(3);
+           before = w.points.get(2);
         } else {
            before = w.points.get(i - 1); 
         }

@@ -67,11 +67,11 @@ class Player {
         float min_dist = dist(x, y, target_x - sandbox.relative.x, target_y - sandbox.relative.y);
           
         for(Wall w: sandbox.walls) {
-           for(int i = 0; i < 4; i++) {
+           for(int i = 0; i < 3; i++) {
              Point before; 
              
              if(i == 0) {
-                before = w.points.get(3);
+                before = w.points.get(2);
              } else {
                 before = w.points.get(i - 1); 
              }
