@@ -1,13 +1,33 @@
-class Game {
+class Game implements MessageReceiver {
    Map map;
    Player you; 
+   
+   Network network;
    
    Game() {
       map = new Map(); 
       you = map.players.get(0); // roboczo
+      network = new Network(this, nick);
    }
    
+   void receivedNewPlayer(int playerId, String name) {
+     println("Received info about new player, id=", playerId, " name=", name);
+   }
+   
+   void receivedMovePlayer(int playerId, float x, float y, float delta_x, float delta_y) { 
+     Player remotePlayer = map.players.get(1); // też roboczo
+     
+     remotePlayer.x = x;
+     remotePlayer.y = y;
+     remotePlayer.delta_x = delta_x;
+     remotePlayer.delta_y = delta_y;
+   }
+
+   
    void frame() {
+    network.tick();
+    network.sendMove(you.x, you.y, you.delta_x, you.delta_y);
+     
     background(150, 200, 200); 
     
     you.setFalsePos();

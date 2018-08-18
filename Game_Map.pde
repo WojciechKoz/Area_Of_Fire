@@ -22,7 +22,7 @@ class Map {
     add_rect(new Point(360, 200), new Point(670, 300));
     
     players.add(new Player());
-
+    players.add(new Player());
   }
   
   void print_map(Player observer) {
