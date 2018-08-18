@@ -10,10 +10,12 @@ AudioContext ac;
 PFont font;
 
 // parameters
-enum Game_position {game, balls, menu};
+enum Game_position {game, balls, menu, input};
 Game_position GP = Game_position.menu;
 
-Menu main = new Menu(); // menu
+String nick = "default";
+
+Menu main = new Menu(); 
 Game game;
 Balls miniGame;
 
@@ -40,6 +42,7 @@ void draw() {
     case game:
       game.frame(); break;
     case menu:
+    case input:
       main.show();
   }
 }
@@ -56,6 +59,7 @@ void mouseReleased() {
 void mousePressed() {
   switch(GP) {
      case menu: 
+     case input:
        main.clicks();break;
      case balls:
        miniGame.player.shoots = true; break;
@@ -69,7 +73,9 @@ void keyPressed() {
     case balls:
       miniGame.keys_down(); break;
     case game:
-      game.keys_down(); 
+      game.keys_down(); break;
+    case input:
+      main.textEdit();    
   }
 
 

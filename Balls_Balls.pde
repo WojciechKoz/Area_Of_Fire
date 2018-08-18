@@ -33,8 +33,11 @@ class Ball extends Enemy{
   }
   
   void move() {
-    delta_x *= change_x(x);
-    delta_y *= change_y(y);
+    float new_x = x + delta_x/frameRate;
+    float new_y = y + delta_y/frameRate;
+    
+    delta_x *= bounce(new_x, radius, width - radius);
+    delta_y *= bounce(new_y, radius, height - radius);
     
     x = x + delta_x/frameRate;
     y = y + delta_y/frameRate;   
@@ -78,25 +81,15 @@ class Crazy extends Enemy {
       delta_x += random(-50, 50);
       delta_y += random(-50, 50);
     }
-    if(delta_x > mobility)
-      delta_x = mobility;
-    if(delta_x < -mobility)
-      delta_x = -mobility;
-    if(delta_y < -mobility)
-      delta_y = -mobility;
-    if(delta_y < -mobility)
-      delta_y = -mobility;
+    
+    delta_x = in_range(-mobility, mobility, delta_x);  
+    delta_y = in_range(-mobility, mobility, delta_y);
       
-    if(x + delta_x/frameRate > 0 && x + delta_x/frameRate < width)
-      x = x + delta_x/frameRate;
-    else
-      delta_x *= -1;
+    delta_x *= bounce(x + delta_x/frameRate, radius, width - radius);
+    delta_y *= bounce(y + delta_y/frameRate, radius, height - radius);
       
-    if(y + delta_y/frameRate > 0 && y + delta_y/frameRate < height) 
-      y = y + delta_y/frameRate;
-    else   
-      delta_y *= -1;
-
+    x += delta_x/frameRate;
+    y += delta_y/frameRate;
   }
   
   void print_it(Level lvl) {
@@ -160,24 +153,185 @@ class DivBoss extends Enemy {
       delta_x += random(-50, 50);
       delta_y += random(-50, 50);
     }
-    if(delta_x > mobility)
-      delta_x = mobility;
-    if(delta_x < -mobility)
-      delta_x = -mobility;
-    if(delta_y < -mobility)
-      delta_y = -mobility;
-    if(delta_y < -mobility)
-      delta_y = -mobility;
       
-    if(x + delta_x/frameRate - radius > 0 && x + delta_x/frameRate + radius < width)
-      x = x + delta_x/frameRate;
-    else
-      delta_x *= -1;
+    delta_x = in_range(-mobility, mobility, delta_x);  
+    delta_y = in_range(-mobility, mobility, delta_y);
       
-    if(y + delta_y/frameRate - radius > 0 && y + delta_y/frameRate + radius < height) 
-      y = y + delta_y/frameRate;
-    else   
-      delta_y *= -1;
+    delta_x *= bounce(x + delta_x/frameRate, radius, width - radius);
+    delta_y *= bounce(y + delta_y/frameRate, radius, height - radius);
+      
+    x += delta_x/frameRate;
+    y += delta_y/frameRate;
+  }
+}
 
+class EasyBall extends Enemy{ 
+  
+  EasyBall() {
+    radius = random(7, 15);
+    x = random(radius + 160, width - radius - 160);
+    y = random(radius + 160, height - radius - 160);
+    delta_x = random(-200, 200);
+    delta_y = random(-200, 200);
+    
+    max_hp = 8;
+    lives = max_hp;
+  }
+  
+  void move() {
+    delta_x *= bounce(x + delta_x/frameRate, radius + 160,  width - radius - 160);
+    delta_y *= bounce(y + delta_y/frameRate, radius + 160, height - radius - 160);
+    
+    x = x + delta_x/frameRate;
+    y = y + delta_y/frameRate;   
+  }
+  
+  void showing_up(float r, int mx, float new_x, float new_y, int i){
+   // visible = true;
+  }
+  
+  void print_it(Level lvl) {
+    strokeWeight(2);
+    fill(5, 135, 9);
+    draw_hp(lives, max_hp);
+    ellipse(x, y, radius*2, radius*2);
+  }
+}
+
+class Agressive extends Enemy{ 
+  boolean agressive;
+  Agressive() {
+    radius = random(15, 18);
+    x = random(radius + 20, width - radius - 20);
+    y = random(radius + 20, height - radius - 20);
+    delta_x = random(-200, 200);
+    delta_y = random(-200, 200);    
+    
+    mobility = 200; // !
+    max_hp = 15;
+    lives = max_hp;
+    agressive = false;
+  }
+  
+  void move() { 
+    if(lives != max_hp && miniGame.type == Type.game)
+      agressive = true;
+    else
+      agressive = false;
+    
+    
+    if(agressive) {
+      float angle = atan2(miniGame.player.y - y, miniGame.player.x - x);
+      
+      Point newPosition = movePoint(x, y, angle, mobility/frameRate);
+                      
+       
+      x = newPosition.x;
+      y = newPosition.y;
+    } else {
+    
+      delta_x *= bounce(x + delta_x/frameRate, radius ,  width - radius);
+      delta_y *= bounce(y + delta_y/frameRate, radius, height - radius);
+      
+      x = x + delta_x/frameRate;
+      y = y + delta_y/frameRate;  
+      
+    }
+    
+  }
+  
+  void showing_up(float r, int mx, float new_x, float new_y, int i){
+   // visible = true;
+  }
+  
+  void print_it(Level lvl) {
+    strokeWeight(2);
+    if(agressive)
+      fill(150, 0, 0);
+    else
+      fill(255, 90, 90);
+    draw_hp(lives, max_hp);
+    ellipse(x, y, radius*2, radius*2);
+  }
+}
+
+class BouncyBall extends Enemy{
+  BouncyBall() {
+    radius = random(7, 13);
+    x = random(radius + 20, width - radius - 20);
+    y = random(radius + 20, height - radius - 20);
+    delta_x = random(-300, 300);
+    delta_y = random(-300, 300);    
+    
+    max_hp = 6;
+    lives = max_hp;
+  }
+  
+  void move() { 
+    float rand = random(0, 1);
+    
+    if(rand > (1 - (0.3 * 1/frameRate))) {
+       delta_x *= -1;
+    } else if(rand > (1 - (0.6 * 1/frameRate))) {
+       delta_y *= -1;
+    }
+
+    delta_x *= bounce(x + delta_x/frameRate, radius ,  width - radius);
+    delta_y *= bounce(y + delta_y/frameRate, radius, height - radius);
+      
+    x = x + delta_x/frameRate;
+    y = y + delta_y/frameRate;      
+  }
+  
+  void showing_up(float r, int mx, float new_x, float new_y, int i){
+   // visible = true;
+  }
+  
+  void print_it(Level lvl) {
+    strokeWeight(2);
+    fill(56, 61, 245);
+    draw_hp(lives, max_hp);
+    ellipse(x, y, radius*2, radius*2);
+  }
+}
+
+class AcceleratingBall extends Enemy{
+  AcceleratingBall() {
+    radius = random(10, 15);
+    x = random(radius + 20, width - radius - 20);
+    y = random(radius + 20, height - radius - 20);
+    delta_x = random(-300, 300);
+    delta_y = random(-300, 300);    
+    
+    mobility = 750;
+    max_hp = 10;
+    lives = max_hp;
+  }
+  
+  void move() {
+    delta_x = absIncrement(delta_x, 10/frameRate);
+    delta_y = absIncrement(delta_y, 10/frameRate);
+    
+    delta_x = in_range(-mobility, mobility, delta_x);  
+    delta_y = in_range(-mobility, mobility, delta_y);
+
+    delta_x *= bounce(x + delta_x/frameRate, radius ,  width - radius);
+    delta_y *= bounce(y + delta_y/frameRate, radius, height - radius);
+      
+    println(delta_x + " " + delta_y);
+      
+    x = x + delta_x/frameRate;
+    y = y + delta_y/frameRate;      
+  }
+  
+  void showing_up(float r, int mx, float new_x, float new_y, int i){
+   // visible = true;
+  }
+  
+  void print_it(Level lvl) {
+    strokeWeight(2);
+    fill(230, 240, 55);
+    draw_hp(lives, max_hp);
+    ellipse(x, y, radius*2, radius*2);
   }
 }

@@ -1,18 +1,8 @@
-float change_x(float q) {
-  if(q  >= width-10  || q  <= 10)
+float bounce(float q, float min, float max) {
+  if(q  >= max || q  <= min) // width - 10 , 10
      return -1; 
   return 1;
 }
-
-float change_y(float q) {
-  if(q  >= height-10  || q  <= 10)
-     return -1; 
-  return 1;
-}
-
-
-
-
 
 void draw_hp(float hp, float max) {
   int g = int(hp/max * 255);

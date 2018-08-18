@@ -20,7 +20,7 @@ class Weapon {
            damage = 1;
            fire_rate = 300;
            accuracy = 0.7;
-           max_ammo = 40;
+           max_ammo = 12;
            multiple = 1;
            weight = 0.05;
         }break;
@@ -53,7 +53,7 @@ class Weapon {
         }break;
         case "rifle":
         {
-           damage = 7;
+           damage = 10;
            fire_rate = 1000;
            accuracy = 1;
            max_ammo = 30;
@@ -72,8 +72,8 @@ class Weapon {
         case "M4":
         {
            damage = 2;
-           fire_rate = 190;
-           accuracy = 0.8;
+           fire_rate = 170;
+           accuracy = 0.9;
            max_ammo = 30;
            multiple = 1;
            weight = 0.4;
@@ -123,6 +123,16 @@ class Weapon {
            multiple = 1;
            weight = 0.9;
         }break;
+        default:
+        {
+           damage = 1;
+           fire_rate = 300;
+           accuracy = 0.7;
+           max_ammo = 12;
+           multiple = 1;
+           weight = 0.05;
+           name = "pistol";
+        }break;
      }
      before = millis() + 400 - fire_rate;
      playsound("overload.wav");
@@ -130,7 +140,7 @@ class Weapon {
  }
  
  void give_ammo() {
-   ammo += int(max_ammo/4);
+   ammo += int(max_ammo/2);
    if(ammo > max_ammo)
      ammo = max_ammo;
  }

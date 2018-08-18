@@ -1,4 +1,5 @@
 class Menu {
+  
   Menu() {}
   
   void show() {
@@ -12,20 +13,48 @@ class Menu {
     rect(width/2, height/2 + 70, 150, 50); 
     fill(0);
     text("sandbox", width/2 + 20 , height/2 + 108); 
-}
-
-void clicks(){
-  if(point_in_rect(mouseX, mouseY, width/2, height/2, 150, 50)) {
-      miniGame = new Balls();
-      GP = Game_position.balls;
-      loop(); 
-    }
     
-    if(point_in_rect(mouseX, mouseY, width/2, height/2 + 70, 150, 50)) {
-      game = new Game();
-      GP = Game_position.game;
-      loop(); 
-    }     
+    text("your nick: ", 100, height - 100);
+    text(nick, 250, height - 100);
+    fill(255, 0, 0);
+    rect(100, height - 80, 100, 40);
+    fill(0);
+    if(GP == Game_position.input)
+      text("accept", 108, height - 50);
+    else
+      text("change", 102, height - 50);
+  }
+
+  void clicks(){
+    if(point_in_rect(mouseX, mouseY, width/2, height/2, 150, 50)) {
+        miniGame = new Balls();
+        GP = Game_position.balls;
+      }
+      
+      if(point_in_rect(mouseX, mouseY, width/2, height/2 + 70, 150, 50)) {
+        game = new Game();
+        GP = Game_position.game;
+      }
+      
+      if(point_in_rect(mouseX, mouseY, 100, height - 80, 100, 40)) {
+        if(GP == Game_position.menu) {
+          GP = Game_position.input;
+          nick = ""; 
+        }
+        else
+          GP = Game_position.menu;
+ 
+      }
+  }
+  void textEdit() {
+     if(keyCode == ENTER)
+       GP = Game_position.menu;
+     if(keyCode == BACKSPACE && nick.length() > 0) { 
+       nick = nick.substring(0, nick.length()-1);
+       return;
+     }
+     if(key != CODED)
+       nick += (char)key; 
   }
   
 }

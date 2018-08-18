@@ -162,10 +162,23 @@ boolean line_intersection_with_circle(float Ax,float Ay, float Bx, float By, flo
     return false;  
 }
 
-int in_range(int min, int max, int value) {
+float in_range(float min, float max, float value) {
    if(value < min)
      value = min;
    if(value > max)
      value = max;
+   return value;
+}
+
+Point movePoint(float x, float y, float a, float R)
+{
+    return new Point((x + cos(a) * R), (y + sin(a) * R));
+}
+
+float absIncrement(float value, final float inc) {
+   if(value >= 0)
+     value += inc;
+   if(value < 0)
+     value -= inc;
    return value;
 }

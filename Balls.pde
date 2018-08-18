@@ -99,6 +99,10 @@ class Balls {
   // ####################  lvl up
   
   void lvl_up() {
+    if(lvl.number == 7) {
+      main.show();
+      GP = Game_position.menu;
+    }
     player.gun = new Weapon("pistol");
     lvl = new Level(lvl.number+1);
     

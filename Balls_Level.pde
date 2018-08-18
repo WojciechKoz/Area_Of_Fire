@@ -13,14 +13,30 @@ class Level {
      
      floor_bonus = new ArrayList<ArrayList>();
      
-     int [] numberOfBalls = {7, 12, 15, 17, 0, 3, 0};
-     int [] numberOfCrazies = {0, 0, 2, 4, 0, 17, 30};
+     int [] numberOfBalls =            {5,  5,  8, 10, 0,  5,  5,  2,  3};
+     int [] numberOfCrazies =          {0,  0,  0,  0, 0,  0,  2,  5, 10};
+     int [] numberOfEasyBalls =        {3,  5,  3,  2, 0,  3,  0,  2,  0};
+     int [] numberOfAgressives =       {0,  0,  0,  0, 0,  2,  5,  5,  4};
+     int [] numberOfBouncyBalls =      {0,  0,  1,  3, 0,  7,  6,  5, 10};
+     int [] numberOfAcceleratingBalls ={0,  0,  0,  0, 0,  0,  2,  4,  3};
      
      for(int i = 0; i < numberOfBalls[num-1]; i++) {
         enemies.add(new Ball()); 
      }
      for(int i = 0; i < numberOfCrazies[num-1]; i++) {
         enemies.add(new Crazy()); 
+     }
+     for(int i = 0; i < numberOfEasyBalls[num-1]; i++) {
+        enemies.add(new EasyBall()); 
+     }
+     for(int i = 0; i < numberOfAgressives[num-1]; i++) {
+        enemies.add(new Agressive()); 
+     }
+     for(int i = 0; i < numberOfBouncyBalls[num-1]; i++) {
+        enemies.add(new BouncyBall()); 
+     }
+     for(int i = 0; i < numberOfAcceleratingBalls[num-1]; i++) {
+        enemies.add(new AcceleratingBall()); 
      }
      if(num == 5) {
        for(int i = 0; i < 15; i++) {
