@@ -1,4 +1,5 @@
-class BPlayer extends Player{  
+class BPlayer extends Player{ 
+  int a;
   BPlayer() {
     x = 300;
     y = 300;
@@ -15,10 +16,10 @@ class BPlayer extends Player{
     mobility = 250;
   }
   
-  void shoot() { 
+  void shoot(Level lvl) { 
     if(millis() - gun.before > gun.fire_rate && !run) {  
       
-      lvl.beginning();
+      miniGame.beginning();
         
       gun.ammo--;
             
@@ -70,7 +71,7 @@ class BPlayer extends Player{
         }
         
         if(lvl.counter == 0) {
-          lvl.ball_lvl_up();
+          miniGame.lvl_up();
         }
         
         shoots++;
@@ -80,14 +81,14 @@ class BPlayer extends Player{
    
   }
   
-  void move() {
+  void move(Level lvl) {
     fill(150, 160, 180);
     strokeWeight(4);
     draw_hp(hp, max_hp);
     
     rect(x, y, a, a);
     
-    if(lvl.type == "pause")
+    if(miniGame.type == Type.pause)
       return;
     
     boolean x_found = false;
@@ -147,10 +148,10 @@ class BPlayer extends Player{
        y += final_delta_y;
     
     if(shoots) 
-      this.shoot();
+      this.shoot(lvl);
   }
   
-  void collision() {
+  void collision(Level lvl) {
     float [] corners_x = {x, x + a, x + a, x};
     float [] corners_y = {y, y, y + a, y + a};
     
@@ -161,11 +162,11 @@ class BPlayer extends Player{
         if(i < lvl.enemies.size())
           if(point_in_circle(lvl.enemies.get(i),  corners_x[j], corners_y[j])) {
             hp--;
-            lvl.first_shots = 0; 
-            lvl.type = "start";
+            miniGame.first_shots = 0; 
+            miniGame.type = Type.start;
           }
           if(hp <= 0){
-             lvl.ball_game_over();
+             miniGame.game_over();
           }
     }
   }

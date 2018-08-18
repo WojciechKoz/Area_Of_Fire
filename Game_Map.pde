@@ -20,14 +20,9 @@ class Map {
     add_rect(new Point(260, 480), new Point(350, 700)); 
     add_rect(new Point(770, 480), new Point(710, 700));
     add_rect(new Point(360, 200), new Point(670, 300));
-/*
-    walls.add(new Wall(new Point(230, 50), new Point(260, 50), new Point(260, 480)));
-    walls.add(new Wall(new Point(260, 50), new Point(800, 50), new Point(800, 80)));
-    walls.add(new Wall(new Point(800, 80), new Point(800, 500), new Point(770, 480)));
-    walls.add(new Wall(new Point(260, 480), new Point(230, 500), new Point(350, 700))); 
-    walls.add(new Wall(new Point(770, 480), new Point(800, 500), new Point(710, 700)));
-    walls.add(new Wall(new Point(360, 200), new Point(670, 200), new Point(670, 300)));
-    */
+    
+    players.add(new Player());
+
   }
   
   void print_map(Player observer) {
@@ -67,71 +62,7 @@ class Map {
     }  
     return true;
   }
-  
-  void game_frame() {
-    background(150, 200, 200);  
-    players.get(0).setFalsePos();
-    print_map(players.get(0));
-    players.get(0).move(); 
-  }
-    
-  void game_keys_down() {
-    if(hasKey('a', players.get(0)))
-      players.get(0).keys.add('a');
-    if(hasKey('d', players.get(0)))
-      players.get(0).keys.add('d');
-    if(hasKey('w', players.get(0)))
-      players.get(0).keys.add('w');
-    if(hasKey('s', players.get(0)))
-      players.get(0).keys.add('s');
-    
-      
-    if(key == 'q' || key == 'Q')  
-      players.get(0).gun = new Weapon("pistol");
-  
-    if(key == 'm' || key == 'M') {
-       GP = Game_position.menu;
-       menu();
-    }  
-    if(keyCode == SHIFT) 
-      players.get(0).run = true; 
-    if(key == 'c' || key == 'C')
-      players.get(0).crouch = true;
-    if(key == ' ')
-      players.get(0).shoots = true;
-  }
-  // ####################################  keyUp
-  
-  void game_keys_up() {
-     if(key == 'A' || key == 'a') 
-        for(int i = 0; i < players.get(0).keys.size(); i++)
-          if((char)players.get(0).keys.get(i) == 'a')
-            players.get(0).keys.remove(i);
-            
-    if(key == 'D' || key == 'd')
-       for(int i = 0; i < players.get(0).keys.size(); i++)
-          if((char)players.get(0).keys.get(i) == 'd')
-            players.get(0).keys.remove(i);
-            
-    if(key == 'W' || key == 'w')
-       for(int i = 0; i < players.get(0).keys.size(); i++)
-          if((char)players.get(0).keys.get(i) == 'w')
-            players.get(0).keys.remove(i);
-            
-    if(key == 'S' || key == 's')
-       for(int i = 0; i < players.get(0).keys.size(); i++)
-          if((char)players.get(0).keys.get(i) == 's')
-            players.get(0).keys.remove(i);
-            
-    if(keyCode == SHIFT) 
-      players.get(0).run = false;
-    if(key == 'c' || key == 'C')
-      players.get(0).crouch = false;
-  
-    if(key == ' ')
-      players.get(0).shoots = false;  
-  }
-  
+
   void cut_map(Player observer) {
     // liczmy prawdziwymi wspolrzednymi 
     fill(0);

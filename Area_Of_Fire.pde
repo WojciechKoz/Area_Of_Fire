@@ -13,11 +13,9 @@ PFont font;
 enum Game_position {game, balls, menu};
 Game_position GP = Game_position.menu;
 
-Player Bplayer;
-
-
-Level lvl;
-Map sandbox;
+Menu main = new Menu(); // menu
+Game game;
+Balls miniGame;
 
 void setup() { 
   fullScreen(P3D, SPAN);
@@ -25,8 +23,8 @@ void setup() {
   cursor(CROSS);
   font = createFont("Arial", 30);
   textFont(font);
-  noLoop();
-  menu();
+ // noLoop();
+  main.show();
   
   frameRate(50);
   
@@ -38,38 +36,40 @@ void setup() {
 void draw() {
   switch(GP) {
     case balls:
-      lvl.ball_frame(); break;
+      miniGame.frame(); break;
     case game:
-      sandbox.game_frame(); 
+      game.frame(); break;
+    case menu:
+      main.show();
   }
 }
 
 void mouseReleased() {
   switch(GP) {
      case balls:
-       Bplayer.shoots = false; break;
+       miniGame.player.shoots = false; break;
      case game:
-        sandbox.players.get(0).shoots = false;
+        game.you.shoots = false;
   }
 }
 
 void mousePressed() {
   switch(GP) {
      case menu: 
-       menu_clicks();break;
+       main.clicks();break;
      case balls:
-       Bplayer.shoots = true; break;
+       miniGame.player.shoots = true; break;
      case game:
-        sandbox.players.get(0).shoots = true;
+        game.you.shoots = true;
   }
 }
 
 void keyPressed() {
   switch(GP) {
     case balls:
-      lvl.ball_keys_down(); break;
+      miniGame.keys_down(); break;
     case game:
-      sandbox.game_keys_down(); 
+      game.keys_down(); 
   }
 
 
@@ -78,8 +78,8 @@ void keyPressed() {
 void keyReleased() {
   switch(GP) {
     case balls:
-      lvl.ball_keys_up(); break;
+      miniGame.keys_up(); break;
     case game:
-      sandbox.game_keys_up(); 
+      game.keys_up(); 
   }
 }

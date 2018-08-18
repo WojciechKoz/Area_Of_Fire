@@ -15,7 +15,7 @@ abstract class Enemy {
       ellipse(x, y, radius*2, radius*2);
     }
   }
-  abstract void print_it();
+  abstract void print_it(Level lvl);
   abstract void move();
   abstract void showing_up(float r, int mx, float new_x, float new_y, int i);
 }
@@ -44,7 +44,7 @@ class Ball extends Enemy{
    // visible = true;
   }
   
-  void print_it() {
+  void print_it(Level lvl) {
     strokeWeight(2);
     fill(10, 176, 255);
     draw_hp(lives, max_hp);
@@ -99,7 +99,7 @@ class Crazy extends Enemy {
 
   }
   
-  void print_it() {
+  void print_it(Level lvl) {
     strokeWeight(2);
     fill(255, 20, 220);
     draw_hp(lives, max_hp);
@@ -134,7 +134,7 @@ class DivBoss extends Enemy {
      visible = true;
    }
    
-   void divide() {
+   void divide(Level lvl) {
      if(max_hp > 26) { 
          lvl.enemies.get(index).showing_up(radius, max_hp, x, y, index);
          lvl.enemies.get(index+1).showing_up(radius, max_hp, x, y, index);
@@ -143,9 +143,9 @@ class DivBoss extends Enemy {
        lvl.counter--;
    }
    
-   void print_it() {
+   void print_it(Level lvl) {
     if(lives < max_hp/2 && lives != 1) 
-       divide();
+       divide(lvl);
     strokeWeight(2);
     fill(0, 0, 0);
     

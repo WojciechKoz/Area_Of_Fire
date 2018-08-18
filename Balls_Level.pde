@@ -4,9 +4,7 @@ class Level {
   ArrayList<Enemy> enemies;
   ArrayList<ArrayList> floor_bonus;
   int counter;
-  int first_shots;
-  String type;
-    
+
   Level(int num) {
      
      number = num;
@@ -32,9 +30,6 @@ class Level {
        enemies.get(0).visible = true;
      }
      counter = enemies.size();
-     
-     first_shots = 0;
-     type = "start";
   }
   
   void new_thing(String n) {
@@ -56,7 +51,7 @@ class Level {
     strokeWeight(0);
   }
   
-  void add_bonus() {
+  void add_bonus(Player player) {
     float r = random(0, 1);
     
     if(r > (1 - (0.005 * 1/frameRate))) 
@@ -105,123 +100,23 @@ class Level {
         text("W", x + 3, y + 10);
       }
       
-      if(sqrt((Bplayer.x-x)*(Bplayer.x-x) + (Bplayer.y-y)*(Bplayer.y-y)) < 24) {
+      if(sqrt((player.x-x)*(player.x-x) + (player.y-y)*(player.y-y)) < 24) {
          if(n == "ammo")
-           Bplayer.gun.give_ammo();
+           player.gun.give_ammo();
          else
-           Bplayer.gun = new Weapon(n);
+           player.gun = new Weapon(n);
          floor_bonus.remove(i);
       }
     }
   }
-  void print_interface() {   
+  void print_interface(Player player) {   
     textSize(30);
-    text("level " + number + "    elem. left " + counter + "   hp " + Bplayer.hp + "     fps" + frameRate, 20, 30);
-    text(Bplayer.gun.name + " " + Bplayer.gun.ammo + "/" + Bplayer.gun.max_ammo, 20, height-30);
+    text("level " + number + "    elem. left " + counter + "   hp " + player.hp + "     fps" + frameRate, 20, 30);
+    text(player.gun.name + " " + player.gun.ammo + "/" + player.gun.max_ammo, 20, height-30);
   }
   
-  void beginning() {
-    if(type == "start") {
-      first_shots++;
-      
-      if(first_shots == 2)
-        type = "game";
-    } 
-  }
+
   
-  void ball_keys_down() {
-    if(hasKey('a', Bplayer))
-      Bplayer.keys.add('a');
-    if(hasKey('d', Bplayer))
-      Bplayer.keys.add('d');
-    if(hasKey('w', Bplayer))
-      Bplayer.keys.add('w');
-    if(hasKey('s', Bplayer))
-      Bplayer.keys.add('s');
-    
-      
-    if(key == 'q' || key == 'Q')  
-      Bplayer.gun = new Weapon("pistol");
-    if(key == 'p' || key == 'P') {
-       if(type == "pause")
-         type = "game";
-       else
-         type = "pause";
-    }
-    if((key == 'm' || key == 'M') && type == "pause") {
-       GP = Game_position.menu;
-       menu();
-    }  
-    if(keyCode == SHIFT) 
-      Bplayer.run = true; 
-    if(key == 'c' || key == 'C')
-      Bplayer.crouch = true;
-    if(key == ' ')
-      Bplayer.shoots = true;
-  }
-  // ####################################  keyUp
-  
-  void ball_keys_up() {
-     if(key == 'A' || key == 'a') 
-        for(int i = 0; i < Bplayer.keys.size(); i++)
-          if((char)Bplayer.keys.get(i) == 'a')
-            Bplayer.keys.remove(i);
-            
-    if(key == 'D' || key == 'd')
-       for(int i = 0; i < Bplayer.keys.size(); i++)
-          if((char)Bplayer.keys.get(i) == 'd')
-            Bplayer.keys.remove(i);
-            
-    if(key == 'W' || key == 'w')
-       for(int i = 0; i < Bplayer.keys.size(); i++)
-          if((char)Bplayer.keys.get(i) == 'w')
-            Bplayer.keys.remove(i);
-            
-    if(key == 'S' || key == 's')
-       for(int i = 0; i < Bplayer.keys.size(); i++)
-          if((char)Bplayer.keys.get(i) == 's')
-            Bplayer.keys.remove(i);
-            
-    if(keyCode == SHIFT) 
-      Bplayer.run = false;
-    if(key == 'c' || key == 'C')
-      Bplayer.crouch = false;
-  
-    if(key == ' ')
-      Bplayer.shoots = false;  
-  }
-   /// ###################  FRAME
-  
-  void ball_frame() {
-    strokeWeight(0);
-    
-    if(lvl.type == "game") {
-      background(100, 70, 130);
-      Bplayer.collision(); 
-      add_bonus(); 
-    }
-    else
-      background(150, 200, 200);    
-    
-    lvl.draw_lines();  
-    
-    bots_moves();
-    Bplayer.move();
-      
-    lvl.print_interface();
-  }
-  // ####################  lvl up
-  
-  void ball_lvl_up() {
-    Bplayer.gun = new Weapon("pistol");
-    lvl = new Level(lvl.number+1);
-  }
-  
-  // #################### game over
-  
-  void ball_game_over() {
-    Bplayer = new BPlayer();
-    lvl = new Level(1);
-  }
+
 
 }

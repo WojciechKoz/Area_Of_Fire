@@ -1,5 +1,6 @@
 class Player {
-  float x, y, a;
+  float x, y;
+  float radius;
   float delta_x, delta_y;
   ArrayList keys;
   Weapon gun;
@@ -14,7 +15,7 @@ class Player {
   Player() {
     x = 300;
     y = 330;
-    a = 25;
+    radius = 13;
     delta_x = 0; 
     delta_y = 0;
     gun = new Weapon("pistol");
@@ -27,7 +28,7 @@ class Player {
     mobility = 250;
   }
   
-  void shoot() { 
+  void shoot(Map map) { 
     if(millis() - gun.before > gun.fire_rate && !run) {  
         
       gun.ammo--;
@@ -62,11 +63,11 @@ class Player {
             target_y += dist/(20*gun.accuracy) * random(-recoil, recoil);
         }
         Point end;
-        Point closerPt = new Point(target_x - sandbox.relative.x, target_y - sandbox.relative.y);
+        Point closerPt = new Point(target_x - map.relative.x, target_y - map.relative.y);
         
-        float min_dist = dist(x, y, target_x - sandbox.relative.x, target_y - sandbox.relative.y);
+        float min_dist = dist(x, y, target_x - map.relative.x, target_y - map.relative.y);
           
-        for(Wall w: sandbox.walls) {
+        for(Wall w: map.walls) {
            for(int i = 0; i < 3; i++) {
              Point before; 
              
@@ -76,7 +77,7 @@ class Player {
                 before = w.points.get(i - 1); 
              }
              
-             end = sections_intersection(new Point(x, y), new Point(target_x - sandbox.relative.x, target_y - sandbox.relative.y), w.points.get(i), before);
+             end = sections_intersection(new Point(x, y), new Point(target_x - map.relative.x, target_y - map.relative.y), w.points.get(i), before);
              float dist = dist(x, y, end.x, end.y);
              
              if(dist < min_dist) {
@@ -90,7 +91,7 @@ class Player {
         fill(254, 217, 103);  
         stroke(254, 217, 103);
         strokeWeight(2);
-        line(sandbox.relative.x + closerPt.x, sandbox.relative.y + closerPt.y, width/2 - relative.x, height/2 - relative.y);
+        line(map.relative.x + closerPt.x, map.relative.y + closerPt.y, width/2 - relative.x, height/2 - relative.y);
         strokeWeight(0);
 
         shoots++;
@@ -99,7 +100,7 @@ class Player {
     }
   }
   
-  void move() {
+  void move(Map map) {
     fill(150, 160, 180);
     strokeWeight(4);
     draw_hp(hp, max_hp);
@@ -153,15 +154,15 @@ class Player {
     float final_delta_x = (delta_x*(1-gun.weight)) * bonus_x / frameRate;
     float final_delta_y = (delta_y*(1-gun.weight)) * bonus_y / frameRate;
 
-    if(x + final_delta_x + a/2 < sandbox._width && x + final_delta_x - a/2 > 0 && sandbox.empty_space(x + final_delta_x, y, a/2))
+    if(x + final_delta_x + radius < map._width && x + final_delta_x - radius > 0 && map.empty_space(x + final_delta_x, y, radius))
       x += final_delta_x;
-    if(y + final_delta_y + a/2 < sandbox._height && y + final_delta_y - a/2 > 0 && sandbox.empty_space(x, y + final_delta_y, a/2))
+    if(y + final_delta_y + radius < map._height && y + final_delta_y - radius > 0 && map.empty_space(x, y + final_delta_y, radius))
       y += final_delta_y;
       
     print_yourself();
     
     if(shoots) 
-      this.shoot();
+      this.shoot(map);
   }
   
   void setFalsePos() {
@@ -174,12 +175,12 @@ class Player {
   void print_yourself() {
      fill(255, 0, 0);
      
-     ellipse(width/2 - relative.x, height/2 - relative.y, a, a); 
+     ellipse(width/2 - relative.x, height/2 - relative.y, 2*radius, 2*radius); 
   }
   
   void print_it(float imag_x, float imag_y) {
      fill(255, 0, 0);
-     ellipse(imag_x + x, imag_y + y, a, a); 
+     ellipse(imag_x + x, imag_y + y, 2*radius, 2*radius); 
   }
   
   void collision() {}
