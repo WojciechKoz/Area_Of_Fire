@@ -49,11 +49,9 @@ class Menu {
   void textEdit() {
      if(keyCode == ENTER)
        GP = Game_position.menu;
-     if(keyCode == BACKSPACE && nick.length() > 0) { 
-       nick = nick.substring(0, nick.length()-1);
-       return;
-     }
-     if(key != CODED)
+     if(keyCode == BACKSPACE && nick.length() > 0) 
+       nick = nick.substring(0, nick.length()-1);    
+     if((char)key >= 32 && (char)key <= 125)
        nick += (char)key; 
   }
   
