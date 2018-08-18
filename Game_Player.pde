@@ -16,8 +16,6 @@ class Player {
   Player() {
     x = 300;
     y = 330;
-    new_x = x;
-    new_y = y;
     
     radius = 13;
     delta_x = 0; 
@@ -183,9 +181,8 @@ class Player {
   }
   
   void print_it(float imag_x, float imag_y) {
-    
-     x = going_to(new_x, delta_x/frameRate, x);
-     y = going_to(new_y, delta_y/frameRate, y);
+     x += delta_x / frameRate;
+     y += delta_y / frameRate;
      
      fill(255, 0, 0);
      ellipse(imag_x + x, imag_y + y, 2*radius, 2*radius); 
