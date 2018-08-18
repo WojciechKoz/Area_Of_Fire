@@ -1,5 +1,6 @@
 class Player {
   float x, y;
+  float new_x, new_y;
   float radius;
   float delta_x, delta_y;
   ArrayList keys;
@@ -15,6 +16,9 @@ class Player {
   Player() {
     x = 300;
     y = 330;
+    new_x = x;
+    new_y = y;
+    
     radius = 13;
     delta_x = 0; 
     delta_y = 0;
@@ -179,9 +183,13 @@ class Player {
   }
   
   void print_it(float imag_x, float imag_y) {
+    
+     x = going_to(new_x, delta_x/frameRate, x);
+     y = going_to(new_y, delta_y/frameRate, y);
+     
      fill(255, 0, 0);
      ellipse(imag_x + x, imag_y + y, 2*radius, 2*radius); 
-  }
+  } 
   
   void collision() {}
    
