@@ -16,6 +16,8 @@ class Player {
   Player() {
     x = 300;
     y = 330;
+    new_x = x;
+    new_y = y;
     
     radius = 13;
     delta_x = 0; 
@@ -181,8 +183,15 @@ class Player {
   }
   
   void print_it(float imag_x, float imag_y) {
-     x = limit(new_x, (delta_x/frameRate), x);
-     y = limit(new_y, (delta_y/frameRate), y);
+     float movementSpeed = 250;
+     
+     if(crouch)
+       movementSpeed *= 0.2;
+     else if(run)
+       movementSpeed *= 1.5;
+    
+     x = limit(new_x, (movementSpeed/frameRate), x);
+     y = limit(new_y, (movementSpeed/frameRate), y);
      
      fill(255, 0, 0);
      ellipse(imag_x + x, imag_y + y, 2*radius, 2*radius); 
