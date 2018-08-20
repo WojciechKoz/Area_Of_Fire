@@ -1,3 +1,5 @@
+// vim: sw=7 ts=7 noet
+
 var net = require('net');
 var msgpack = require('msgpack');
 
@@ -22,7 +24,7 @@ var allClients = [];
 
 // after 15s of no data a socket is considered disconnected.
 function resetTimeout(socket) {
-	socket.disconnectTimeout.refresh();
+	//socket.disconnectTimeout.refresh();
 }
 
 // Pack a message and send it to socket
@@ -80,10 +82,11 @@ var server = net.createServer(function(socket) {
 
 	socket.setNoDelay(true);
 
-	socket.disconnectTimeout = setTimeout(function() {
-		console.log(`Kicking ${socket} due to inactivity`);
-		socket.end();
-	}, TIMEOUT_KICK);
+	socket.setTimeout(TIMEOUT_KICK);
+	//socket.disconnectTimeout = setTimeout(function() {
+	//	console.log(`Kicking ${socket} due to inactivity`);
+	//	socket.end();
+	//}, TIMEOUT_KICK);
 
 	sendAllPlayersNicknames(socket);
 	//messageToSocket(socket, [MSGS_SEND.PLAYER_MOVE, [123, 1.5, 1.5, 1.5, 1.5]])
@@ -94,8 +97,7 @@ var server = net.createServer(function(socket) {
 		socket
 	}
 
-	const allClientsIndex = allClients.length;
-	allClients.push(clientInfo);
+	allClients[clientInfo.clientId] = clientInfo;
 
 	socket.on('data', function(data) {
 		resetTimeout(socket);
@@ -116,7 +118,7 @@ var server = net.createServer(function(socket) {
 
 	socket.on('end', function() {
 		// TODO: tell other players this player is disconnected
-		delete allClients[allClientsIndex];
+		delete allClients[clientInfo.clientId];
 	});
 
 	socket.on('error', function(err) {
