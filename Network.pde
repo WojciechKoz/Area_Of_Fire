@@ -46,8 +46,8 @@ class Network {
         }
         
         short flags = 0;
-        flags |= ((crouch ? 0 : 1) << 0);
-        flags |= ((run ? 0 : 1) << 1);
+        flags |= ((crouch ? 1 : 0) << 0);
+        flags |= ((run ? 1 : 0) << 1);
         
         try {
           packer.packArrayHeader(2);
