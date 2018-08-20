@@ -15,19 +15,19 @@ class Game implements MessageReceiver {
      println("Received info about new player, id=", playerId, " name=", name);
    }
    
-   void receivedMovePlayer(int playerId, float x, float y, float delta_x, float delta_y) { 
+   void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run) { 
      Player remotePlayer = map.players.get(1); // też roboczo
      
      remotePlayer.new_x = x;
      remotePlayer.new_y = y;
-     remotePlayer.delta_x = delta_x;
-     remotePlayer.delta_y = delta_y;
+     remotePlayer.crouch = crouch;
+     remotePlayer.run = run;
    }
 
    
    void frame() {
     network.tick();
-    network.sendMove(you.x, you.y, you.delta_x, you.delta_y);
+    network.sendMove(you.x, you.y, you.crouch, you.run);
      
     background(150, 200, 200); 
     

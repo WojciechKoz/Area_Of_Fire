@@ -182,7 +182,7 @@ class Player {
   
   void print_it(float imag_x, float imag_y) {
      x = limit(new_x, (delta_x/frameRate), x);
-     x = limit(new_x, (delta_x/frameRate), x);
+     y = limit(new_y, (delta_y/frameRate), y);
      
      fill(255, 0, 0);
      ellipse(imag_x + x, imag_y + y, 2*radius, 2*radius); 
