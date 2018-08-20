@@ -183,20 +183,11 @@ float absIncrement(float value, final float inc) {
    return value;
 }
 
-float limit(float target, float step, float value) {
-  if(target > value ){
-    if(step < 0)
-      step *= -1;
-      
-    if(value + step <= target) 
-       value += step;
-  }
-  else {
-    if(step > 0)
-      step *= -1;
+float limit(float to, float step, float from) {
+  float result = from;
+  
+  if((step > 0 && result < to) || (step < 0 && result > to))
+    result += step;
     
-    if(value + step >= target)
-      value += step;    
-  }
-  return value;   
+  return result;   
 }
