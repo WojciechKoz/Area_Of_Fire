@@ -18,8 +18,8 @@ class Game implements MessageReceiver {
    void receivedMovePlayer(int playerId, float x, float y, float delta_x, float delta_y) { 
      Player remotePlayer = map.players.get(1); // też roboczo
      
-     remotePlayer.x = x;
-     remotePlayer.y = y;
+     remotePlayer.new_x = x;
+     remotePlayer.new_y = y;
      remotePlayer.delta_x = delta_x;
      remotePlayer.delta_y = delta_y;
    }

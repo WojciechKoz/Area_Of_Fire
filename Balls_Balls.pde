@@ -309,8 +309,8 @@ class AcceleratingBall extends Enemy{
   }
   
   void move() {
-    delta_x = absIncrement(delta_x, 10/frameRate);
-    delta_y = absIncrement(delta_y, 10/frameRate);
+    delta_x = absIncrement(delta_x, 7/frameRate);
+    delta_y = absIncrement(delta_y, 7/frameRate);
     
     delta_x = in_range(-mobility, mobility, delta_x);  
     delta_y = in_range(-mobility, mobility, delta_y);

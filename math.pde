@@ -183,13 +183,20 @@ float absIncrement(float value, final float inc) {
    return value;
 }
 
-float going_to(float target, float step, float value) {
-  if(target > value){
-     if(value + step <= target) 
+float limit(float target, float step, float value) {
+  if(target > value ){
+    if(step < 0)
+      step *= -1;
+      
+    if(value + step <= target) 
        value += step;
   }
-  else 
+  else {
+    if(step > 0)
+      step *= -1;
+    
     if(value + step >= target)
-      value += step;
+      value += step;    
+  }
   return value;   
 }

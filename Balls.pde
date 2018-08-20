@@ -99,7 +99,7 @@ class Balls {
   // ####################  lvl up
   
   void lvl_up() {
-    if(lvl.number == 7) {
+    if(lvl.number == 9) {
       main.show();
       GP = Game_position.menu;
     }
