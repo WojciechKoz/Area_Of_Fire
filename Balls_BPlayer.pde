@@ -1,19 +1,26 @@
-class BPlayer extends Player{ 
+class BPlayer {
+  final float radius = 13;
+  final int max_hp = 5;
+  final float mobility = 250;
+  
+  float x, y;;
+  Weapon gun;
+  boolean shoots;
+  boolean run;
+  boolean crouch;
+  
+  int hp;
   int a;
+  ArrayList keys;
   BPlayer() {
     x = 300;
     y = 300;
     a = 25;
-    delta_x = 0; 
-    delta_y = 0;
     gun = new Weapon("pistol");
-    max_hp = 5;
     hp = max_hp;
     keys = new ArrayList();
     run = false;
     crouch = false;
-    
-    mobility = 250;
   }
   
   void shoot(Level lvl) { 
@@ -94,8 +101,8 @@ class BPlayer extends Player{
     boolean x_found = false;
     boolean y_found = false;
     
-    delta_x = 0;
-    delta_y = 0;
+    float delta_x = 0;
+    float delta_y = 0;
     
     for(int i = keys.size()-1; i >=0; i--) {
        // looking for a d

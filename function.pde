@@ -29,6 +29,10 @@ void playsound(String path) {
 }
 
 
-boolean hasKey(char k, Player p) {
+boolean hasKey(char k, BPlayer p) {
+  return (key == k || key == Character.toUpperCase(k)) && !p.keys.contains(k);
+}
+
+boolean hasKey(char k, LocalPlayer p) {
     return (key == k || key == Character.toUpperCase(k)) && !p.keys.contains(k);
 }

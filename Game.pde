@@ -1,25 +1,33 @@
 
 class Game implements MessageReceiver {
    Map map;
-   Player you; 
+   LocalPlayer you;
+   HashMap<Integer, RemotePlayer> remotePlayers = new HashMap<Integer, RemotePlayer>();
    
    Network network;
    
    Game() {
       map = new Map(); 
-      you = map.players.get(0); // roboczo
+      you = new LocalPlayer();
       network = new Network(this, nick);
    }
    
    void receivedNewPlayer(int playerId, String name) {
+     RemotePlayer rp = new RemotePlayer();
+     remotePlayers.put(playerId, rp);
      println("Received info about new player, id=", playerId, " name=", name);
    }
    
-   void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run) { 
-     Player remotePlayer = map.players.get(1); // też roboczo
+   void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run) {
+     if(! remotePlayers.containsKey(playerId)) {
+        println("Nonexistant playerId: ", playerId);
+        return;
+     }
      
-     remotePlayer.new_x = x;
-     remotePlayer.new_y = y;
+     RemotePlayer remotePlayer = remotePlayers.get(playerId);
+    
+     remotePlayer.network_shadow_x = x;
+     remotePlayer.network_shadow_y = y;
      remotePlayer.crouch = crouch;
      remotePlayer.run = run;
    }
@@ -34,6 +42,9 @@ class Game implements MessageReceiver {
     you.setFalsePos();
     
     map.print_map(you);
+    
+    for(RemotePlayer player : remotePlayers.values())
+       player.print_it(map.relative.x, map.relative.y);
     
     you.move(map); 
   }

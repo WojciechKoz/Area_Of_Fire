@@ -2,7 +2,6 @@
 class Map {
   float _width;
   float _height;
-  ArrayList<Player> players = new ArrayList<Player>();
   ArrayList<Wall> walls = new ArrayList<Wall>();
   Point relative = new Point(0,0);
   
@@ -20,9 +19,6 @@ class Map {
     add_rect(new Point(260, 480), new Point(350, 700)); 
     add_rect(new Point(770, 480), new Point(710, 700));
     add_rect(new Point(360, 200), new Point(670, 300));
-    
-    players.add(new Player());
-    players.add(new Player());
   }
   
   void print_map(Player observer) {
@@ -34,9 +30,6 @@ class Map {
      relative.y = height/2 - observer.relative.y - observer.y;
      
      rect(relative.x, relative.y, _width, _height);
-     
-     for(int i = 1; i < players.size(); i++)
-       players.get(i).print_it(relative.x, relative.y);
      
      cut_map(observer);
      

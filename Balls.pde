@@ -2,7 +2,7 @@ enum Type {start, pause, game};
 
 class Balls {
   Level lvl;
-  Player player;
+  BPlayer player;
   Type type;
   int first_shots;
   

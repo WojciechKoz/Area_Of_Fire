@@ -67,7 +67,7 @@ class Level {
     strokeWeight(0);
   }
   
-  void add_bonus(Player player) {
+  void add_bonus(BPlayer player) {
     float r = random(0, 1);
     
     if(r > (1 - (0.005 * 1/frameRate))) 
@@ -125,7 +125,7 @@ class Level {
       }
     }
   }
-  void print_interface(Player player) {   
+  void print_interface(BPlayer player) {   
     textSize(30);
     text("level " + number + "    elem. left " + counter + "   hp " + player.hp + "     fps" + frameRate, 20, 30);
     text(player.gun.name + " " + player.gun.ammo + "/" + player.gun.max_ammo, 20, height-30);
