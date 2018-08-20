@@ -7,7 +7,7 @@ import org.msgpack.value.*;
 
 interface MessageReceiver {
    void receivedNewPlayer(int playerId, String name); 
-   void receivedMovePlayer(int playerId, float x, float y, float delta_x, float delta_y);
+   void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run);
 }
 
 private enum ReceivedMessageType {
@@ -39,16 +39,23 @@ class Network {
         packer.flush();
     }
     
-    public void sendMove(float x, float y, float delta_x, float delta_y) {
+    public void sendMove(float x, float y, boolean crouch, boolean run) {
+        if(! client.active()) {
+          println("Not connected");
+          return;
+        }
+        
+        short flags = 0;
+        flags |= ((crouch ? 0 : 1) << 0);
+        flags |= ((run ? 0 : 1) << 1);
         
         try {
           packer.packArrayHeader(2);
           packer.packInt(SEND_MOVE);
-          packer.packArrayHeader(4);
+          packer.packArrayHeader(3);
           packer.packFloat(x);
           packer.packFloat(y);
-          packer.packFloat(delta_x);
-          packer.packFloat(delta_y);
+          packer.packShort(flags);
           packer.flush();
         } catch (IOException ex) {
           println("Failed sending a move packet");
@@ -60,12 +67,19 @@ class Network {
         this.mr = mr;
         client = new Client(Area_Of_Fire.this, "35.228.141.175", 7543);
         
+        if(!client.active()) {
+          println("Could not connect to server");
+          return;
+        }
+        
         packer = MessagePack.newDefaultPacker(client.output);
         
         try {
           sendNickname(nickname);
         } catch(IOException e) {
-          throw new RuntimeException(e);
+          println("Exception while sending nickname, disconnecting");
+          e.printStackTrace();
+          client.stop();
         }
     }
     
@@ -105,23 +119,31 @@ class Network {
            handleSingleMessage(msgType, unpacker);
        }
     }
+    
     private float unpackFloat(MessageUnpacker unpacker) throws IOException {
       ImmutableValue v = unpacker.unpackValue();
       if(v.isIntegerValue())
         return (float) v.asIntegerValue().toInt();
       return v.asFloatValue().toFloat();
     }
+    
     private void handleSingleMessage(ReceivedMessageType msgType, MessageUnpacker unpacker) throws IOException {
       println(msgType);
       switch(msgType) {
         case PLAYER_MOVE: {
-          assert unpacker.unpackArrayHeader() == 5;
+          if(unpacker.unpackArrayHeader() != 4) {
+            println("Unexpected PLAYER_MOVE array length");
+            return;
+          }
           int playerId = unpacker.unpackInt();
           float x = unpackFloat(unpacker);
           float y = unpackFloat(unpacker);
-          float delta_x = unpackFloat(unpacker);
-          float delta_y = unpackFloat(unpacker);
-          mr.receivedMovePlayer(playerId, x, y, delta_x, delta_y);
+          short flags = unpacker.unpackShort();
+          
+          boolean crouch = (flags & (1 << 0)) != 0;
+          boolean run = (flags & (1 << 1)) != 0;
+          
+          mr.receivedMovePlayer(playerId, x, y, crouch, run);
           break;
         }
         case NEW_PLAYER: {

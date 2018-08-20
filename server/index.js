@@ -64,12 +64,12 @@ handleMessage[MSGS_RECEIVE.SET_NICKNAME] = function(arg) {
 	sendToAllExcept(this.clientId, [MSGS_SEND.NEW_PLAYER, [this.clientId, arg]])
 }
 handleMessage[MSGS_RECEIVE.PLAYER_MOVE] = function(arg) {
-	// arg is [x:float, y:float, delta_x:float, delta_y:float]
-	if(!Array.isArray(arg) || arg.length != 4) {
+	// arg is [x:float, y:float, flags:short]
+	if(!Array.isArray(arg) || arg.length != 3) {
 		console.warn(`Malformed PLAYER_MOVE from client ${this.clientId}`);
 		return;
 	}
-	var message = [MSGS_SEND.PLAYER_MOVE, [this.clientId, arg[0], arg[1], arg[2], arg[3]]];
+	var message = [MSGS_SEND.PLAYER_MOVE, [this.clientId, arg[0], arg[1], arg[2]]];
 	console.log(message)
 	sendToAllExcept(this.clientId, message);
 }
@@ -77,6 +77,8 @@ handleMessage[MSGS_RECEIVE.PLAYER_MOVE] = function(arg) {
 
 var server = net.createServer(function(socket) {
 	console.log('connected')
+
+	socket.setNoDelay(true);
 
 	socket.disconnectTimeout = setTimeout(function() {
 		console.log(`Kicking ${socket} due to inactivity`);
@@ -122,4 +124,4 @@ var server = net.createServer(function(socket) {
 	})
 });
 
-server.listen(7543, '127.0.0.1');
+server.listen(7543, '0.0.0.0');
