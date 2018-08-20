@@ -186,11 +186,6 @@ float absIncrement(float value, final float inc) {
 float limit(float to, float step, float from) {
   float result = from;
   
-<<<<<<< HEAD
-  if((step > 0 && result < to) || (step < 0 && result > to))
-    result += step;
-    
-=======
   result += step;
   
   if(step > 0 && result > to)
@@ -199,6 +194,5 @@ float limit(float to, float step, float from) {
   if(step < 0 && result < to)
     result = to;
     
->>>>>>> 90758ac2cf0ae05d68ea4fa40457679297b381e6
   return result;   
 }
