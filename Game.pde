@@ -18,7 +18,7 @@ class Game implements MessageReceiver {
      println("Received info about new player, id=", playerId, " name=", name);
    }
    
-   void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run) {
+   void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run, int gunId) {
      if(! remotePlayers.containsKey(playerId)) {
         println("Nonexistant playerId: ", playerId);
         return;
@@ -30,6 +30,9 @@ class Game implements MessageReceiver {
      remotePlayer.network_shadow_y = y;
      remotePlayer.crouch = crouch;
      remotePlayer.run = run;
+     
+     if(remotePlayer.gun.id != gunId)
+       remotePlayer.gun = new Weapon(Weapons.values()[gunId].getName());
    }
    
    void receivedShot(int playerId, ArrayList<Point> endsOfShots) {
@@ -47,7 +50,7 @@ class Game implements MessageReceiver {
    
    void frame() {
     network.tick();
-    network.sendMoveAndShots(you.x, you.y, you.crouch, you.run, you.shotsPoints);
+    network.sendState(you.x, you.y, you.crouch, you.run, you.gun.id, you.shotsPoints);
      
     background(150, 200, 200); 
     

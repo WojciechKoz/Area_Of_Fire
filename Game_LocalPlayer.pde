@@ -161,6 +161,8 @@ class LocalPlayer extends Player {
       fill(255, 0, 0);
       ellipse(relative.x, relative.y, radius*2, radius*2);
     }
-    
+    if(hp <= 0 ) {
+      exit();   
+    }
   }
 }

@@ -9,6 +9,8 @@ class RemotePlayer extends Player {
       movementSpeed *= 0.2;
     else if(run)
       movementSpeed *= 1.5;
+      
+    movementSpeed *= (1-gun.weight);
   
     x = limit(network_shadow_x, (movementSpeed/frameRate), x);
     y = limit(network_shadow_y, (movementSpeed/frameRate), y);

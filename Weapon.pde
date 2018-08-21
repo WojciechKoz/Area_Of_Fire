@@ -1,5 +1,31 @@
+public enum Weapons {
+   PISTOL("pistol"),
+   MAC("mac"),
+   SHOTGUN("shotgun"),
+   AK47("AK47"),
+   RIFLE("rifle"),
+   SUPER90("super90"),
+   M4("M4"),
+   PSG("PSG-1"),
+   P90("P90"),
+   M14("M14"),
+   MP5("mp5"),
+   M61("M61Vulcan");
+   
+   private Weapons(String name) {
+      this.name = name;
+   }
+
+   private final String name;
+
+   public String getName() {
+      return name;
+   }
+}
+
 
 class Weapon {
+ int id;
  String name;
  int damage;
  int fire_rate;
@@ -23,6 +49,7 @@ class Weapon {
            max_ammo = 12;
            multiple = 1;
            weight = 0.05;
+           id = 0;
         }break;
         case "mac":
         {
@@ -32,6 +59,7 @@ class Weapon {
            max_ammo = 50;
            multiple = 1;
            weight = 0.1;
+           id = 1;
         }break;
         case "shotgun":
         {
@@ -41,6 +69,7 @@ class Weapon {
            max_ammo = 8;
            multiple = 5;
            weight = 0.5;
+           id = 2;
         }break;
         case "AK47":
         {
@@ -50,6 +79,7 @@ class Weapon {
            max_ammo = 32;
            multiple = 1;
            weight = 0.4;
+           id = 3;
         }break;
         case "rifle":
         {
@@ -59,6 +89,7 @@ class Weapon {
            max_ammo = 30;
            multiple = 1;
            weight = 0.6;
+           id = 4;
         }break;  
         case "super90":
         {
@@ -68,6 +99,7 @@ class Weapon {
            max_ammo = 12;
            multiple = 4;
            weight = 0.5;
+           id = 5;
         }break;
         case "M4":
         {
@@ -77,6 +109,7 @@ class Weapon {
            max_ammo = 30;
            multiple = 1;
            weight = 0.4;
+           id = 6;
         }break;
         case "PSG-1":
         {
@@ -86,6 +119,7 @@ class Weapon {
            max_ammo = 30;
            multiple = 1;
            weight = 0.7;
+           id = 7;
         }break;
         case "P90":
         {
@@ -95,6 +129,7 @@ class Weapon {
            max_ammo = 50;
            multiple = 1;
            weight = 0.1;
+           id = 8;
         }break;
         case "M14":
         {
@@ -104,6 +139,7 @@ class Weapon {
            max_ammo = 25;
            multiple = 1;
            weight = 0.4;
+           id = 9;
         }break;
         case "mp5":
         {
@@ -113,6 +149,7 @@ class Weapon {
            max_ammo = 30;
            multiple = 1;
            weight = 0.1;
+           id = 10;
         }break;
         case "M61Vulcan":
         {
@@ -122,6 +159,7 @@ class Weapon {
            max_ammo = 150;
            multiple = 1;
            weight = 0.9;
+           id = 11;
         }break;
         default:
         {
@@ -132,6 +170,7 @@ class Weapon {
            multiple = 1;
            weight = 0.05;
            name = "pistol";
+           id = 0;
         }break;
      }
      before = millis() + 400 - fire_rate;

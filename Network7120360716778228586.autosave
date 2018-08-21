@@ -7,7 +7,7 @@ import org.msgpack.value.*;
 
 interface MessageReceiver {    
    void receivedNewPlayer(int playerId, String name); 
-   void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run, int gunId);
+   void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run);
    void receivedShot(int playerId, ArrayList<Point> endsOfShots);
 }
 
@@ -30,6 +30,7 @@ class Network {
   
     private MessageReceiver mr;
     
+    MessageUnpacker unpacker;
     MessagePacker packer;
     
     private ReceivedMessageType[] messageTypeValues = ReceivedMessageType.values();
@@ -54,7 +55,7 @@ class Network {
       endsOfBullet.clear();
     }
     
-    public void sendState(float x, float y, boolean crouch, boolean run, int gunId, ArrayList<Point> endsOfBullet) {
+    public void sendMoveAndShots(float x, float y, boolean crouch, boolean run, ArrayList<Point> endsOfBullet) {
         if(! client.active()) {
           println("Not connected");
           return;
@@ -68,11 +69,10 @@ class Network {
           packer.packArrayHeader(endsOfBullet.size() > 0 ? 4 : 2);
           
           packer.packInt(SEND_MOVE);
-          packer.packArrayHeader(4); 
+          packer.packArrayHeader(3); 
           packer.packFloat(x); 
           packer.packFloat(y); 
           packer.packShort(flags); 
-          packer.packInt(gunId);
           
           if(endsOfBullet.size() > 0) {
             packer.packInt(SEND_SHOT);
@@ -111,17 +111,14 @@ class Network {
       while(client.available() > 0) {
         int read = client.readBytes(buffer);
         try {
-          MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(buffer, 0, read);
-          while(unpacker.hasNext()) {
-            unpackMessage(unpacker);
-          }
+          unpackMessage(read);
         } catch(IOException ex) {
           ex.printStackTrace();
         }
       }  
     }
     
-    private void unpackMessage(MessageUnpacker unpacker) throws IOException {
+    private void unpackMessage(int len) throws IOException {
        
       /*
        print("Got message: ");
@@ -131,10 +128,11 @@ class Network {
        println("");
        */
        
+       MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(buffer, 0, len);
        int mapLength = unpacker.unpackArrayHeader() / 2;
        for(int i = 0; i < mapLength; i++) {
            int messageTypeIndex = unpacker.unpackInt();
-           println("recv message type: ", messageTypeIndex);
+       //    println("recv message type: ", messageTypeIndex);
            
            if(messageTypeIndex < 0 || messageTypeIndex >= messageTypeValues.length) {
               println("Wrong message type: ", messageTypeIndex); 
@@ -165,20 +163,19 @@ class Network {
         }
         
         case PLAYER_MOVE: {
-          if(unpacker.unpackArrayHeader() != 5) {
+          if(unpacker.unpackArrayHeader() != 4) {
             println("Unexpected PLAYER_MOVE array length");
             return;
           }
           int playerId = unpacker.unpackInt();
           float x = unpackFloat(unpacker);
           float y = unpackFloat(unpacker);
-          int gunId = unpacker.unpackInt();
           short flags = unpacker.unpackShort();
           
           boolean crouch = (flags & (1 << 0)) != 0;
           boolean run = (flags & (1 << 1)) != 0;
    
-          mr.receivedMovePlayer(playerId, x, y, crouch, run, gunId);
+          mr.receivedMovePlayer(playerId, x, y, crouch, run);
           break;
         }
         
