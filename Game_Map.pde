@@ -1,3 +1,4 @@
+import java.util.Collection;
 
 class Map {
   float _width;
@@ -21,7 +22,7 @@ class Map {
     add_rect(new Point(360, 200), new Point(670, 300));
   }
   
-  void print_map(Player observer) {
+  void print_map(Player observer, Collection<RemotePlayer> remotePlayers) {
      background(0);
      strokeWeight(0);
      fill(27, 168, 0);
@@ -31,8 +32,11 @@ class Map {
      
      rect(relative.x, relative.y, _width, _height);
      
-     cut_map(observer);
+     for(RemotePlayer player : remotePlayers)
+       player.print_it(relative.x, relative.y);
      
+     cut_map(observer);
+    
      for(Wall w: walls)
        w.print_it(relative.x, relative.y);
   }

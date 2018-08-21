@@ -40,11 +40,9 @@ class Game implements MessageReceiver {
     background(150, 200, 200); 
     
     you.setFalsePos();
+   
     
-    map.print_map(you);
-    
-    for(RemotePlayer player : remotePlayers.values())
-       player.print_it(map.relative.x, map.relative.y);
+    map.print_map(you, remotePlayers.values());
     
     you.move(map); 
   }

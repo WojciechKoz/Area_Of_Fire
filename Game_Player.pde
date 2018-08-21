@@ -21,8 +21,4 @@ abstract class Player {
     run = false;
     crouch = false;
   }
-  
-  
-
-  
 }
