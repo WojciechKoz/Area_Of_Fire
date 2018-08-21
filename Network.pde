@@ -5,19 +5,22 @@ import org.msgpack.core.MessagePacker;
 import org.msgpack.core.MessageUnpacker;
 import org.msgpack.value.*;
 
-interface MessageReceiver {
+interface MessageReceiver {    
    void receivedNewPlayer(int playerId, String name); 
    void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run);
+   void receivedShot(int playerId, ArrayList<Point> endsOfShots);
 }
 
 private enum ReceivedMessageType {
   NEW_PLAYER,
   PLAYER_MOVE,
+  SHOT,
 }
 
 class Network {
     private final int SEND_SET_NICKNAME = 0;
     private final int SEND_MOVE = 1;
+    private final int SEND_SHOT = 2;
     
     private final int BUFFER_LEN = 4096;
   
@@ -39,23 +42,42 @@ class Network {
         packer.flush();
     }
     
-    public void sendMove(float x, float y, boolean crouch, boolean run) {
+    private void packShots(ArrayList<Point> endsOfBullet) {
+      for(Point pt: endsOfBullet) {
+        try {
+          packer.packFloat(pt.x);
+          packer.packFloat(pt.y);
+        } catch (IOException ex) {
+          println("Failed sending a shots packet");
+          ex.printStackTrace();
+        }
+      }
+      endsOfBullet.clear();
+    }
+    
+    public void sendMoveAndShots(float x, float y, boolean crouch, boolean run, ArrayList<Point> endsOfBullet) {
         if(! client.active()) {
           println("Not connected");
           return;
-        }
+        }     
         
         short flags = 0;
         flags |= ((crouch ? 1 : 0) << 0);
         flags |= ((run ? 1 : 0) << 1);
         
         try {
-          packer.packArrayHeader(2);
+          packer.packArrayHeader(4);
+          
           packer.packInt(SEND_MOVE);
-          packer.packArrayHeader(3);
-          packer.packFloat(x);
-          packer.packFloat(y);
-          packer.packShort(flags);
+          packer.packArrayHeader(3); 
+          packer.packFloat(x); 
+          packer.packFloat(y); 
+          packer.packShort(flags); 
+          
+          packer.packInt(SEND_SHOT);
+          packer.packArrayHeader(endsOfBullet.size() * 2);
+          packShots(endsOfBullet); 
+          
           packer.flush();
         } catch (IOException ex) {
           println("Failed sending a move packet");
@@ -130,6 +152,14 @@ class Network {
     private void handleSingleMessage(ReceivedMessageType msgType, MessageUnpacker unpacker) throws IOException {
       println(msgType);
       switch(msgType) {
+        case NEW_PLAYER: {
+          assert unpacker.unpackArrayHeader() == 2;
+          int playerId = unpacker.unpackInt();
+          String playerName = unpacker.unpackString();
+          mr.receivedNewPlayer(playerId, playerName);
+          break;
+        }
+        
         case PLAYER_MOVE: {
           if(unpacker.unpackArrayHeader() != 4) {
             println("Unexpected PLAYER_MOVE array length");
@@ -142,17 +172,26 @@ class Network {
           
           boolean crouch = (flags & (1 << 0)) != 0;
           boolean run = (flags & (1 << 1)) != 0;
-          
+   
           mr.receivedMovePlayer(playerId, x, y, crouch, run);
           break;
         }
-        case NEW_PLAYER: {
-          assert unpacker.unpackArrayHeader() == 2;
+        
+        case SHOT: { 
+          final int size = unpacker.unpackArrayHeader();
           int playerId = unpacker.unpackInt();
-          String playerName = unpacker.unpackString();
-          mr.receivedNewPlayer(playerId, playerName);
+          
+          ArrayList<Point> receivedShots = new ArrayList<Point>();
+          
+          for(int i = 1; i < size; i += 2) {         
+             float shotx = unpackFloat(unpacker);
+             float shoty = unpackFloat(unpacker);
+                
+             receivedShots.add(new Point(shotx, shoty));           
+          }
+          mr.receivedShot(playerId, receivedShots);
           break;
-        }
+        }       
       }
     }
 }
