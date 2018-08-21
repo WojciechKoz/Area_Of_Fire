@@ -16,7 +16,7 @@ abstract class Player {
     x = 300;
     y = 330;
     
-    gun = new Weapon("pistol");
+    gun = new Weapon("AK47");
     hp = max_hp;
     run = false;
     crouch = false;

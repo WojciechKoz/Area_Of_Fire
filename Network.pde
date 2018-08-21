@@ -134,7 +134,7 @@ class Network {
        int mapLength = unpacker.unpackArrayHeader() / 2;
        for(int i = 0; i < mapLength; i++) {
            int messageTypeIndex = unpacker.unpackInt();
-           println("recv message type: ", messageTypeIndex);
+          // println("recv message type: ", messageTypeIndex);
            
            if(messageTypeIndex < 0 || messageTypeIndex >= messageTypeValues.length) {
               println("Wrong message type: ", messageTypeIndex); 
@@ -171,9 +171,9 @@ class Network {
           }
           int playerId = unpacker.unpackInt();
           float x = unpackFloat(unpacker);
-          float y = unpackFloat(unpacker);
-          int gunId = unpacker.unpackInt();
+          float y = unpackFloat(unpacker);         
           short flags = unpacker.unpackShort();
+          int gunId = unpacker.unpackInt();
           
           boolean crouch = (flags & (1 << 0)) != 0;
           boolean run = (flags & (1 << 1)) != 0;

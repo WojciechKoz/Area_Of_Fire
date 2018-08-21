@@ -33,6 +33,8 @@ class Game implements MessageReceiver {
      
      if(remotePlayer.gun.id != gunId)
        remotePlayer.gun = new Weapon(Weapons.values()[gunId].getName());
+       
+     println(remotePlayer.gun.name);
    }
    
    void receivedShot(int playerId, ArrayList<Point> endsOfShots) {
