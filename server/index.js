@@ -84,7 +84,7 @@ handleMessage[MSGS_RECEIVE.PLAYER_MOVE] = function(clientInfo, arg) {
 	console.log(message)
 	sendToAllExcept(clientInfo.clientId, message);
 }
-handleMessage[MSGS_RECEIVE.SHOT] = function(clientInfo, arg) {
+handleMessage[MSGS_RECEIVE.SHOT_WEAPON] = function(clientInfo, arg) {
 	// arg is [ x, y, x, y, ... ]
 	console.log(`Received shot! ${arg}`);
 	if(!Array.isArray(arg) || arg.filter(num => typeof num !== 'number').length > 0) {
