@@ -31,20 +31,37 @@ class Game implements MessageReceiver {
      remotePlayer.crouch = crouch;
      remotePlayer.run = run;
    }
+   
+   void receivedShot(int playerId, ArrayList<Point> endsOfShots) {
+     RemotePlayer remotePlayer = remotePlayers.get(playerId);
+     
+     for(Point pt: endsOfShots) {
+       you.shooted(remotePlayer.x, remotePlayer.y, pt.x, pt.y, remotePlayer.gun);
+     }
+     
+     remotePlayer.shots = endsOfShots;
+   }
 
    
    void frame() {
     network.tick();
-    network.sendMove(you.x, you.y, you.crouch, you.run);
+    network.sendMoveAndShots(you.x, you.y, you.crouch, you.run, you.shotsPoints);
      
     background(150, 200, 200); 
     
-    you.setFalsePos();
-   
+    you.setFalsePos();   
     
     map.print_map(you, remotePlayers.values());
     
     you.move(map); 
+    
+    printInterface();
+  }
+  
+  void printInterface() {
+    textSize(30);
+    text("hp " + you.hp + " / " + you.max_hp, 20, 30);
+    text(you.gun.name + " " + you.gun.ammo + "/" + you.gun.max_ammo, 20, height-30);
   }
   
   void keys_down() {

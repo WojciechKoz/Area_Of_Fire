@@ -36,3 +36,13 @@ boolean hasKey(char k, BPlayer p) {
 boolean hasKey(char k, LocalPlayer p) {
     return (key == k || key == Character.toUpperCase(k)) && !p.keys.contains(k);
 }
+
+void drawShot(float x1, float y1, float x2, float y2) {
+  fill(254, 217, 103);    
+  stroke(254, 217, 103);  
+  strokeWeight(2);
+  
+  line(x1, y1, x2, y2);
+  
+  strokeWeight(0); 
+}

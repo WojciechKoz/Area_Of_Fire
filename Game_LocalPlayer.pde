@@ -1,5 +1,5 @@
 class LocalPlayer extends Player {
-   
+  ArrayList<Point> shotsPoints = new ArrayList<Point>();
   ArrayList keys = new ArrayList();
   
   LocalPlayer() {
@@ -138,11 +138,9 @@ class LocalPlayer extends Player {
            }
         }
         
-        fill(254, 217, 103);  
-        stroke(254, 217, 103);
-        strokeWeight(2);
-        line(map.relative.x + closerPt.x, map.relative.y + closerPt.y, width/2 - relative.x, height/2 - relative.y);
-        strokeWeight(0);
+        drawShot(map.relative.x + closerPt.x, map.relative.y + closerPt.y, width/2 - relative.x, height/2 - relative.y);
+        
+        shotsPoints.add(closerPt);
 
         shoots++;
       } while(shoots < gun.multiple);
@@ -155,5 +153,14 @@ class LocalPlayer extends Player {
      fill(255, 0, 0);
      
      ellipse(width/2 - relative.x, height/2 - relative.y, 2*radius, 2*radius); 
+  }
+  
+  void shooted(float from_x, float from_y, float to_x, float to_y, Weapon gun) {
+    if(line_intersection_with_circle(from_x, from_y, to_x, to_y, x, y, radius)) {
+      hp -= gun.damage;
+      fill(255, 0, 0);
+      ellipse(relative.x, relative.y, radius*2, radius*2);
+    }
+    
   }
 }
