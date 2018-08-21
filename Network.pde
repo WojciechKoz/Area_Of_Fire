@@ -66,7 +66,7 @@ class Network {
         flags |= ((run ? 1 : 0) << 1);
         
         try {
-          packer.packArrayHeader(4);
+          packer.packArrayHeader(endsOfBullet.size() > 0 ? 4 : 2);
           
           packer.packInt(SEND_MOVE);
           packer.packArrayHeader(3); 
@@ -74,9 +74,11 @@ class Network {
           packer.packFloat(y); 
           packer.packShort(flags); 
           
-          packer.packInt(SEND_SHOT);
-          packer.packArrayHeader(endsOfBullet.size() * 2);
-          packShots(endsOfBullet); 
+          if(endsOfBullet.size() > 0) {
+            packer.packInt(SEND_SHOT);
+            packer.packArrayHeader(endsOfBullet.size() * 2);
+            packShots(endsOfBullet); 
+          }
           
           packer.flush();
         } catch (IOException ex) {
@@ -150,7 +152,7 @@ class Network {
     }
     
     private void handleSingleMessage(ReceivedMessageType msgType, MessageUnpacker unpacker) throws IOException {
-      println(msgType);
+     // println(msgType);
       switch(msgType) {
         case NEW_PLAYER: {
           assert unpacker.unpackArrayHeader() == 2;

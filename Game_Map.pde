@@ -33,7 +33,7 @@ class Map {
      rect(relative.x, relative.y, _width, _height);
      
      for(RemotePlayer player : remotePlayers)
-       player.print_it(relative.x, relative.y);
+       player.print_it(relative.x, relative.y, this);
      
      cut_map(observer);
     
