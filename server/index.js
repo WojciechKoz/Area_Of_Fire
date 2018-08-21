@@ -14,6 +14,7 @@ const MSGS_SEND = {
 const MSGS_RECEIVE = {
 	SET_NICKNAME: 0,
 	PLAYER_MOVE: 1,
+	SHOT_WEAPON: 2,
 }
 
 var _lastClientId = 1;
@@ -72,13 +73,25 @@ handleMessage[MSGS_RECEIVE.PLAYER_MOVE] = function(clientInfo, arg) {
 		console.warn(`Malformed PLAYER_MOVE from client ${clientInfo.clientId}`);
 		return;
 	}
+
+	var [x, y, flags] = arg;
+
+	clientInfo.x = x;
+	clientInfo.y = y;
+	clientInfo.flags = flags;
+
 	var message = [MSGS_SEND.PLAYER_MOVE, [clientInfo.clientId, arg[0], arg[1], arg[2]]];
 	console.log(message)
 	sendToAllExcept(clientInfo.clientId, message);
 }
-handleMessage[MSGS_RECEIVE.SHOT] = function(arg) {
+handleMessage[MSGS_RECEIVE.SHOT] = function(clientInfo, arg) {
+	// arg is [ x, y, x, y, ... ]
 	console.log(`Received shot! ${arg}`);
-	/// ....
+	if(!Array.isArray(arg) || arg.filter(num => typeof num !== 'number').length > 0) {
+		console.warn(`SHOT from ${clientInfo.clientId}: argument is not a number array: ${arg}`);
+		return;
+	}
+	sendToAllExcept(clientInfo.clientId, [MSGS_SEND.SHOT, [ clientInfo.clientId ].concat(arg)]);
 }
 
 
@@ -98,6 +111,9 @@ var server = net.createServer(function(socket) {
 	var clientInfo = {
 		clientId: newClientId(),
 		nickname: null,
+		x: 0,
+		y: 0,
+		flags: 0,
 		socket
 	}
 
@@ -112,7 +128,7 @@ var server = net.createServer(function(socket) {
 			var arg = arr[i + 1];
 			//console.log(`Received message type ${kind} with arg ${arg}`)
 			if(!handleMessage[kind]) {
-				console.warn(`Missing a handler for message ${kind}`)
+				console.warn(`Missing a handler for message type ${kind}`)
 				continue;
 			}
 
