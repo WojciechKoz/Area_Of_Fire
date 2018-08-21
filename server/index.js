@@ -68,19 +68,20 @@ handleMessage[MSGS_RECEIVE.SET_NICKNAME] = function(clientInfo, arg) {
 	sendToAllExcept(clientInfo.clientId, [MSGS_SEND.NEW_PLAYER, [clientInfo.clientId, arg]])
 }
 handleMessage[MSGS_RECEIVE.PLAYER_MOVE] = function(clientInfo, arg) {
-	// arg is [x:float, y:float, flags:short]
+	// arg is [x:float, y:float, flags:short, weapon:int]
 	if(!Array.isArray(arg) || arg.length != 3) {
 		console.warn(`Malformed PLAYER_MOVE from client ${clientInfo.clientId}`);
 		return;
 	}
 
-	var [x, y, flags] = arg;
+	var [x, y, flags, weapon] = arg;
 
 	clientInfo.x = x;
 	clientInfo.y = y;
 	clientInfo.flags = flags;
+	clientInfo.weapon = weapon;
 
-	var message = [MSGS_SEND.PLAYER_MOVE, [clientInfo.clientId, arg[0], arg[1], arg[2]]];
+	var message = [MSGS_SEND.PLAYER_MOVE, [clientInfo.clientId, x, y, flags, weapon]];
 	console.log(message)
 	sendToAllExcept(clientInfo.clientId, message);
 }
