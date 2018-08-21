@@ -119,10 +119,15 @@ var server = net.createServer(function(socket) {
 
 	allClients[clientInfo.clientId] = clientInfo;
 
-	socket.on('data', function(data) {
+	var msgpackStream = new msgpack.Stream(socket);
+	msgpackStream.addListener('msg', function(arr) {
 		resetTimeout(socket);
 
-		var arr = msgpack.unpack(data);
+		if(!Array.isArray(arr)) {
+			console.warn('Got a message that is not an array');
+			return;
+		}
+
 		for(var i = 0, len = arr.length; i < len; i += 2) {
 			var kind = arr[i];
 			var arg = arr[i + 1];
@@ -134,7 +139,7 @@ var server = net.createServer(function(socket) {
 
 			handleMessage[kind](clientInfo, arg);
 		}
-	})
+	});
 
 	socket.on('end', function() {
 		// TODO: tell other players this player is disconnected

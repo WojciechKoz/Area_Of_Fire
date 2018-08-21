@@ -30,7 +30,6 @@ class Network {
   
     private MessageReceiver mr;
     
-    MessageUnpacker unpacker;
     MessagePacker packer;
     
     private ReceivedMessageType[] messageTypeValues = ReceivedMessageType.values();
@@ -111,14 +110,17 @@ class Network {
       while(client.available() > 0) {
         int read = client.readBytes(buffer);
         try {
-          unpackMessage(read);
+          MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(buffer, 0, read);
+          while(unpacker.hasNext()) {
+            unpackMessage(unpacker);
+          }
         } catch(IOException ex) {
           ex.printStackTrace();
         }
       }  
     }
     
-    private void unpackMessage(int len) throws IOException {
+    private void unpackMessage(MessageUnpacker unpacker) throws IOException {
        
       /*
        print("Got message: ");
@@ -128,7 +130,6 @@ class Network {
        println("");
        */
        
-       MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(buffer, 0, len);
        int mapLength = unpacker.unpackArrayHeader() / 2;
        for(int i = 0; i < mapLength; i++) {
            int messageTypeIndex = unpacker.unpackInt();
