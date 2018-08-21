@@ -8,6 +8,7 @@ const TIMEOUT_KICK = 60000; // 60 s
 const MSGS_SEND = {
 	NEW_PLAYER: 0,
 	PLAYER_MOVE: 1,
+	SHOT: 2,
 };
 
 const MSGS_RECEIVE = {
@@ -22,9 +23,9 @@ function newClientId() {
 
 var allClients = [];
 
-// after 15s of no data a socket is considered disconnected.
+// after TIMEOUT_KICK ms of no data a socket is considered disconnected.
 function resetTimeout(socket) {
-	//socket.disconnectTimeout.refresh();
+	socket.disconnectTimeout.refresh();
 }
 
 // Pack a message and send it to socket
@@ -58,22 +59,26 @@ function sendToAllExcept(clientId, message) {
 
 // All message types possible to receive from the client
 var handleMessage = []
-handleMessage[MSGS_RECEIVE.SET_NICKNAME] = function(arg) {
+handleMessage[MSGS_RECEIVE.SET_NICKNAME] = function(clientInfo, arg) {
 	arg = "" + arg;
 
 	console.log(`Nickname = ${arg}`)
-	this.nickname = arg;
-	sendToAllExcept(this.clientId, [MSGS_SEND.NEW_PLAYER, [this.clientId, arg]])
+	clientInfo.nickname = arg;
+	sendToAllExcept(clientInfo.clientId, [MSGS_SEND.NEW_PLAYER, [clientInfo.clientId, arg]])
 }
-handleMessage[MSGS_RECEIVE.PLAYER_MOVE] = function(arg) {
+handleMessage[MSGS_RECEIVE.PLAYER_MOVE] = function(clientInfo, arg) {
 	// arg is [x:float, y:float, flags:short]
 	if(!Array.isArray(arg) || arg.length != 3) {
-		console.warn(`Malformed PLAYER_MOVE from client ${this.clientId}`);
+		console.warn(`Malformed PLAYER_MOVE from client ${clientInfo.clientId}`);
 		return;
 	}
-	var message = [MSGS_SEND.PLAYER_MOVE, [this.clientId, arg[0], arg[1], arg[2]]];
+	var message = [MSGS_SEND.PLAYER_MOVE, [clientInfo.clientId, arg[0], arg[1], arg[2]]];
 	console.log(message)
-	sendToAllExcept(this.clientId, message);
+	sendToAllExcept(clientInfo.clientId, message);
+}
+handleMessage[MSGS_RECEIVE.SHOT] = function(arg) {
+	console.log(`Received shot! ${arg}`);
+	/// ....
 }
 
 
@@ -82,11 +87,10 @@ var server = net.createServer(function(socket) {
 
 	socket.setNoDelay(true);
 
-	socket.setTimeout(TIMEOUT_KICK);
-	//socket.disconnectTimeout = setTimeout(function() {
-	//	console.log(`Kicking ${socket} due to inactivity`);
-	//	socket.end();
-	//}, TIMEOUT_KICK);
+	socket.disconnectTimeout = setTimeout(function() {
+		console.log(`Kicking ${socket} due to inactivity`);
+		socket.end();
+	}, TIMEOUT_KICK);
 
 	sendAllPlayersNicknames(socket);
 	//messageToSocket(socket, [MSGS_SEND.PLAYER_MOVE, [123, 1.5, 1.5, 1.5, 1.5]])
@@ -112,7 +116,7 @@ var server = net.createServer(function(socket) {
 				continue;
 			}
 
-			handleMessage[kind].call(clientInfo, arg);
+			handleMessage[kind](clientInfo, arg);
 		}
 	})
 
