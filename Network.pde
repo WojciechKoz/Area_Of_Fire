@@ -168,10 +168,7 @@ class Network {
         }
         
         case PLAYER_MOVE: {
-          if(unpacker.unpackArrayHeader() != 5) {
-            println("Unexpected PLAYER_MOVE array length");
-            return;
-          }
+          assert unpacker.unpackArrayHeader() == 5;
           int playerId = unpacker.unpackInt();
           float x = unpackFloat(unpacker);
           float y = unpackFloat(unpacker);         
@@ -215,6 +212,8 @@ class Network {
             int hp = unpacker.unpackInt();
             
             mr.receivedSetHp(playerId, hp);
+          } else {
+            throw new RuntimeException("Unexpected SET_HP array length"); 
           }
           break;
         }
