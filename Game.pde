@@ -13,6 +13,12 @@ class Game implements MessageReceiver {
       network = new Network(this, nick);
    }
    
+   Player getPlayerById(int id) {
+     if(id == -1)
+       return you;
+     return remotePlayers.get(id);
+   }
+   
    void receivedNewPlayer(int playerId, String name) {
      RemotePlayer rp = new RemotePlayer();
      remotePlayers.put(playerId, rp);
@@ -57,6 +63,7 @@ class Game implements MessageReceiver {
        
        if(hp <= 0) {
          GP = Game_position.menu;
+         return;
        }  
          
      }
@@ -67,12 +74,15 @@ class Game implements MessageReceiver {
      }
      
      if(hp <= 0) {
-        String newMessage = remotePlayers.get(shooterId).nick + " killed " + remotePlayers.get(playerId).nick + " by " + remotePlayers.get(shooterId).gun.name;
+       Player shooter = getPlayerById(shooterId);
+       Player killed = getPlayerById(playerId);
+          
+       String newMessage = shooter.nick + " killed " + killed.nick + " by " + shooter.gun.name;
         
-        if(news.size() == 4)
-          news.set(3, newMessage);
-        else
-          news.add(newMessage);
+       if(news.size() == 4)
+         news.set(3, newMessage);
+       else
+         news.add(newMessage);
      }
    }
 
