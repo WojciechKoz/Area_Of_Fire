@@ -3,6 +3,9 @@ class RemotePlayer extends Player {
   ArrayList<Point> shots = new ArrayList<Point>();
 
   void print_it(float imag_x, float imag_y, Map map) {
+    if(hp == 0)
+      return;
+    
     float movementSpeed = 250;
    
     if(crouch)

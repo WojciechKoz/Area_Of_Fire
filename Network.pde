@@ -162,7 +162,7 @@ class Network {
         case NEW_PLAYER: {
           assert unpacker.unpackArrayHeader() == 2;
           int playerId = unpacker.unpackInt();
-          String playerName = unpacker.unpackString();
+          String playerName = unpacker.unpackString(); 
           mr.receivedNewPlayer(playerId, playerName);
           break;
         }

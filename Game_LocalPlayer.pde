@@ -155,14 +155,5 @@ class LocalPlayer extends Player {
      ellipse(width/2 - relative.x, height/2 - relative.y, 2*radius, 2*radius); 
   }
   
-  void shooted(float from_x, float from_y, float to_x, float to_y, Weapon gun) {
-    if(line_intersection_with_circle(from_x, from_y, to_x, to_y, x, y, radius)) {
-      hp -= gun.damage;
-      fill(255, 0, 0);
-      ellipse(relative.x, relative.y, radius*2, radius*2);
-    }
-    if(hp <= 0 ) {
-      exit();   
-    }
-  }
+  
 }

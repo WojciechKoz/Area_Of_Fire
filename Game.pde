@@ -17,6 +17,8 @@ class Game implements MessageReceiver {
      RemotePlayer rp = new RemotePlayer();
      remotePlayers.put(playerId, rp);
      println("Received info about new player, id=", playerId, " name=", name);
+     
+     rp.nick = name;
    }
    
    void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run, int gunId) {
@@ -50,8 +52,14 @@ class Game implements MessageReceiver {
    }
    
    void receivedSetHp(int playerId, int hp, int shooterId) {
-     if(playerId == -1)
+     if(playerId == -1) {
        you.hp = hp;
+       
+       if(hp == 0) {
+         GP = Game_position.menu;
+       }  
+         
+     }
      else {
        RemotePlayer remotePlayer = remotePlayers.get(playerId);
      
