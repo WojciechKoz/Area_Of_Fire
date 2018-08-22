@@ -94,8 +94,13 @@ function decreaseHp({ hit, shooter }) {
 	var damage = weaponDamage(shooter.weapon);
 	console.log(`Decreased hp of ${hit.clientId} from ${hit.hp} to ${hit.hp - damage}`);
 	hit.hp -= damage;
-	sendToAllExcept(hit.clientId, [MSGS_SEND.SET_HP, [hit.clientId, hit.hp, shooter.clientId]])
-	messageToSocket(hit.socket, [MSGS_SEND.SET_HP, [-1, hit.hp, shooter.clientId]]);
+
+	allClients.forEach(client => {
+		var hitId = (client.clientId == hit.clientId) ? -1 : hit.clientId;
+		var shooterId = (client.clientId == shooter.clientId) ? -1 : shooter.clientId;
+
+		messageToSocket(client.socket, [MSGS_SEND.SET_HP, [hitId, hit.hp, shooterId]]);
+	});
 }
 
 function handleShot(shootingClient, bulletEnd) {
