@@ -9,6 +9,7 @@ interface MessageReceiver {
    void receivedNewPlayer(int playerId, String name); 
    void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run, int gunId);
    void receivedShot(int playerId, ArrayList<Point> endsOfShots);
+   void receivedSetHp(int playerId, int hp, int shooterId);
    void receivedSetHp(int playerId, int hp);
 }
 
@@ -201,11 +202,20 @@ class Network {
         }
         
         case SET_HP: {
-          assert unpacker.unpackArrayHeader() == 2;
-          int playerId = unpacker.unpackInt();
-          int hp = unpacker.unpackInt();
+          int size = unpacker.unpackArrayHeader();
           
-          mr.receivedSetHp(playerId, hp);
+          if(size == 3) {
+            int playerId = unpacker.unpackInt();
+            int hp = unpacker.unpackInt();
+            int shooterId = unpacker.unpackInt();
+            
+            mr.receivedSetHp(playerId, hp, shooterId);
+          } else if(size == 2) {
+            int playerId = unpacker.unpackInt();
+            int hp = unpacker.unpackInt();
+            
+            mr.receivedSetHp(playerId, hp);
+          }
           break;
         }
       }

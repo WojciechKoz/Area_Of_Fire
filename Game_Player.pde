@@ -3,6 +3,7 @@ abstract class Player {
   final int max_hp = 5;
   final float mobility = 250;
   
+  String nick;
   float x, y;
   Weapon gun;
   boolean shoots;
@@ -20,5 +21,6 @@ abstract class Player {
     hp = max_hp;
     run = false;
     crouch = false;
+    nick = "";
   }
 }

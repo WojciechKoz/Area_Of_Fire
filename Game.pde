@@ -3,6 +3,7 @@ class Game implements MessageReceiver {
    Map map;
    LocalPlayer you;
    HashMap<Integer, RemotePlayer> remotePlayers = new HashMap<Integer, RemotePlayer>();
+   ArrayList<String> news = new ArrayList<String>();
    
    Network network;
    
@@ -48,12 +49,34 @@ class Game implements MessageReceiver {
      remotePlayer.shots = endsOfShots;
    }
    
-   void receivedSetHp(int playerId, int hp) {
-     RemotePlayer remotePlayer = remotePlayers.get(playerId);
+   void receivedSetHp(int playerId, int hp, int shooterId) {
+     if(playerId == -1)
+       you.hp = hp;
+     else {
+       RemotePlayer remotePlayer = remotePlayers.get(playerId);
      
-     remotePlayer.hp = hp;
+       remotePlayer.hp = hp;
+     }
+     
+     if(hp == 0) {
+        String newMessage = remotePlayers.get(shooterId).nick + " killed " + remotePlayers.get(playerId).nick + " by " + remotePlayers.get(shooterId).gun.name;
+        
+        if(news.size() == 4)
+          news.set(3, newMessage);
+        else
+          news.add(newMessage);
+     }
    }
 
+   void receivedSetHp(int playerId, int hp) {
+     if(playerId == -1)
+       you.hp = hp;
+     else {
+       RemotePlayer remotePlayer = remotePlayers.get(playerId);
+     
+       remotePlayer.hp = hp;
+     }
+   }
    
    void frame() {
     network.tick();
@@ -71,9 +94,16 @@ class Game implements MessageReceiver {
   }
   
   void printInterface() {
+    fill(255, 0, 0);
     textSize(30);
     text("hp " + you.hp + " / " + you.max_hp, 20, 30);
     text(you.gun.name + " " + you.gun.ammo + "/" + you.gun.max_ammo, 20, height-30);
+    
+    fill(255);
+    textSize(18);
+    for(int i = 0; i < news.size(); i++)
+      text(news.get(i), 2*width/3, 20 * i + 20);
+    
   }
   
   void keys_down() {
