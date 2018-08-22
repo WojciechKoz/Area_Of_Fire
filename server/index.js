@@ -56,8 +56,12 @@ function sendGameStateToNewPlayer(socket) {
 		if(client.nickname != null) {
 			message.push(MSGS_SEND.NEW_PLAYER);
 			message.push([client.clientId, client.nickname]);
+
 			message.push(MSGS_SEND.SET_HP);
 			message.push([client.clientId, client.hp]);
+
+			message.push(MSGS_SEND.PLAYER_MOVE);
+			message.push([client.clientId, client.x, client.y, client.flags, client.weapon]);
 		}
 	}
 	messageToSocket(socket, message);
@@ -108,7 +112,10 @@ function handleShot(shootingClient, bulletEnd) {
 		if(otherPlayer.clientId == shootingClient.clientId)
 			return; // skip the shooter
 
-		console.log(shootingClient.x, shootingClient.y, bulletEnd.x, bulletEnd.y, otherPlayer.x, otherPlayer.y, PLAYER_RADIUS);
+		if(otherPlayer.hp <= 0)
+			return;
+
+		//console.log(shootingClient.x, shootingClient.y, bulletEnd.x, bulletEnd.y, otherPlayer.x, otherPlayer.y, PLAYER_RADIUS);
 		if(math.line_intersection_with_circle(
 			shootingClient.x, shootingClient.y,
 			bulletEnd.x, bulletEnd.y,
@@ -143,7 +150,7 @@ handleMessage[MSGS_RECEIVE.PLAYER_MOVE] = function(clientInfo, arg) {
 	clientInfo.weapon = weapon;
 
 	var message = [MSGS_SEND.PLAYER_MOVE, [clientInfo.clientId, x, y, flags, weapon]];
-	console.log(message)
+	// console.log(message)
 	sendToAllExcept(clientInfo.clientId, message);
 }
 handleMessage[MSGS_RECEIVE.SHOT_WEAPON] = function(clientInfo, arg) {

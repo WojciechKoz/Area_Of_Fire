@@ -40,10 +40,10 @@ class Game implements MessageReceiver {
      remotePlayer.crouch = crouch;
      remotePlayer.run = run;
      
+     remotePlayer.receivedMove();
+
      if(remotePlayer.gun.id != gunId)
        remotePlayer.gun = new Weapon(Weapons.values()[gunId].getName());
-       
-     println(remotePlayer.gun.name);
    }
    
    void receivedShot(int playerId, ArrayList<Point> endsOfShots) {
@@ -76,7 +76,7 @@ class Game implements MessageReceiver {
      if(hp <= 0) {
        Player shooter = getPlayerById(shooterId);
        Player killed = getPlayerById(playerId);
-          
+
        String newMessage = shooter.nick + " killed " + killed.nick + " by " + shooter.gun.name;
         
        if(news.size() == 4)

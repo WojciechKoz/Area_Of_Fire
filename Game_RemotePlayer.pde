@@ -1,8 +1,23 @@
 class RemotePlayer extends Player {
   float network_shadow_x, network_shadow_y;
   ArrayList<Point> shots = new ArrayList<Point>();
+  boolean hasReceivedMove = false;
+
+  void receivedMove() {
+    if(! hasReceivedMove) {
+      // this is the first MOVE message from this player
+      hasReceivedMove = true;
+
+      // teleport to location instantly
+      x = network_shadow_x;
+      y = network_shadow_y;
+    }
+  }
 
   void print_it(float imag_x, float imag_y, Map map) {
+    if(!hasReceivedMove)
+      return;
+
     if(hp <= 0)
       return;
     
