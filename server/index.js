@@ -3,6 +3,11 @@
 var net = require('net');
 var msgpack = require('msgpack');
 
+// fix exiting in Docker
+process.on('SIGINT', function() {
+    process.exit();
+});
+
 const TIMEOUT_KICK = 60000; // 60 s
 
 const MSGS_SEND = {
@@ -152,4 +157,6 @@ var server = net.createServer(function(socket) {
 	})
 });
 
-server.listen(7543, '0.0.0.0');
+server.listen(7543, '0.0.0.0', function() {
+	console.log('Listening');
+});
