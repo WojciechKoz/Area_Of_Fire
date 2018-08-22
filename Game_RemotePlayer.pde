@@ -16,10 +16,19 @@ class RemotePlayer extends Player {
     y = limit(network_shadow_y, (movementSpeed/frameRate), y);
    
     fill(255, 0, 0);
+    draw_hp(hp, max_hp);
     ellipse(imag_x + x, imag_y + y, 2*radius, 2*radius); 
+    noStroke();
  
+    // draw and play shot effect
     for(Point pt: shots)
       drawShot(map.relative.x + x, map.relative.y + y, map.relative.x + pt.x, map.relative.y + pt.y);
+      
+    if(!shots.isEmpty()) {
+      
+      playsound(gun.name + ".wav");
+    }  
+      
     shots.clear();
   } 
 

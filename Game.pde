@@ -40,13 +40,18 @@ class Game implements MessageReceiver {
    void receivedShot(int playerId, ArrayList<Point> endsOfShots) {
      RemotePlayer remotePlayer = remotePlayers.get(playerId);
      
-     println("received func");
-     
+     /*
      for(Point pt: endsOfShots) {
-       you.shooted(remotePlayer.x, remotePlayer.y, pt.x, pt.y, remotePlayer.gun);
-     }
+       you.shooted(remotePlayer.x, remotePlayer.y, pt.x, pt.y, remotePlayer.gun);     server.. 
+     }*/
      
      remotePlayer.shots = endsOfShots;
+   }
+   
+   void receivedSetHp(int playerId, int hp) {
+     RemotePlayer remotePlayer = remotePlayers.get(playerId);
+     
+     remotePlayer.hp = hp;
    }
 
    

@@ -7,7 +7,7 @@ float bounce(float q, float min, float max) {
 void draw_hp(float hp, float max) {
   int g = int(hp/max * 255);
   int r = int(max/hp*130);
-  
+  strokeWeight(3);
   stroke(r, g, 20); 
 }
 

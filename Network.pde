@@ -9,12 +9,14 @@ interface MessageReceiver {
    void receivedNewPlayer(int playerId, String name); 
    void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run, int gunId);
    void receivedShot(int playerId, ArrayList<Point> endsOfShots);
+   void receivedSetHp(int playerId, int hp);
 }
 
 private enum ReceivedMessageType {
   NEW_PLAYER,
   PLAYER_MOVE,
   SHOT,
+  SET_HP,
 }
 
 class Network {
@@ -196,7 +198,16 @@ class Network {
           }
           mr.receivedShot(playerId, receivedShots);
           break;
-        }       
+        }
+        
+        case SET_HP: {
+          assert unpacker.unpackArrayHeader() == 2;
+          int playerId = unpacker.unpackInt();
+          int hp = unpacker.unpackInt();
+          
+          mr.receivedSetHp(playerId, hp);
+          break;
+        }
       }
     }
 }
