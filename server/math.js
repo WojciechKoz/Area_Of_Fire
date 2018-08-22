@@ -1,4 +1,4 @@
-var { max, min, sqrt, sin, cos } = Math;
+var { max, min, sqrt, sin, cos, abs } = Math;
 
 function Point(x, y) {
     this.x = x;
