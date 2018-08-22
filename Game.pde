@@ -55,7 +55,7 @@ class Game implements MessageReceiver {
      if(playerId == -1) {
        you.hp = hp;
        
-       if(hp == 0) {
+       if(hp <= 0) {
          GP = Game_position.menu;
        }  
          
@@ -66,7 +66,7 @@ class Game implements MessageReceiver {
        remotePlayer.hp = hp;
      }
      
-     if(hp == 0) {
+     if(hp <= 0) {
         String newMessage = remotePlayers.get(shooterId).nick + " killed " + remotePlayers.get(playerId).nick + " by " + remotePlayers.get(shooterId).gun.name;
         
         if(news.size() == 4)
