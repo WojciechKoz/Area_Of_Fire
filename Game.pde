@@ -58,42 +58,38 @@ class Game implements MessageReceiver {
    }
    
    void receivedSetHp(int playerId, int hp, int shooterId) {
-     if(playerId == -1) {
-       you.hp = hp;
-       
-       if(hp <= 0) {
-         GP = Game_position.menu;
-         return;
-       }  
-         
-     }
-     else {
-       RemotePlayer remotePlayer = remotePlayers.get(playerId);
+     Player shooter = getPlayerById(shooterId);
+     Player shot = getPlayerById(playerId);
      
-       remotePlayer.hp = hp;
+     if(shooter == null || shot == null) {
+       println("Received SET_HP(3) with nonexistant player id");
+       return;
      }
+     
+     shot.hp = hp;
+     
+     if(you.hp <= 0) {
+       GP = Game_position.menu;
+       return;
+     }  
      
      if(hp <= 0) {
-       Player shooter = getPlayerById(shooterId);
-       Player killed = getPlayerById(playerId);
-
-       String newMessage = shooter.nick + " killed " + killed.nick + " by " + shooter.gun.name;
+       String newMessage = shooter.nick + " killed " + shot.nick + " by " + shooter.gun.name;
         
-       if(news.size() == 4)
-         news.set(3, newMessage);
-       else
-         news.add(newMessage);
+       if(news.size() >= 4)
+         news.remove(0);
+       
+       news.add(newMessage);
      }
    }
 
    void receivedSetHp(int playerId, int hp) {
-     if(playerId == -1)
-       you.hp = hp;
-     else {
-       RemotePlayer remotePlayer = remotePlayers.get(playerId);
-     
-       remotePlayer.hp = hp;
+     Player player = getPlayerById(playerId);
+     if(player == null) {
+       println("Received SET_HP(2) with nonexistant player id: ", playerId);
+       return;
      }
+     player.hp = hp;
    }
    
    void frame() {
