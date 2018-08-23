@@ -12,7 +12,7 @@ process.on('SIGINT', function() {
 
 const PLAYER_RADIUS = 15;
 
-const TIMEOUT_KICK = 60000; // 60 s
+const TIMEOUT_KICK = 20000; // 20 s
 
 const MSGS_SEND = {
 	NEW_PLAYER: 0,
@@ -190,7 +190,7 @@ var server = net.createServer(function(socket) {
 	socket.setNoDelay(true);
 
 	socket.disconnectTimeout = setTimeout(function() {
-		console.log(`Kicking ${socket} due to inactivity`);
+		console.log(`Kicking client ${clientInfo.clientId} due to inactivity`);
 		getRidOf(clientInfo);
 	}, TIMEOUT_KICK);
 
