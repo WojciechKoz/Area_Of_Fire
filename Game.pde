@@ -28,12 +28,12 @@ class Game implements MessageReceiver {
    }
    
    void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run, int gunId) {
-     if(! remotePlayers.containsKey(playerId)) {
-        println("Nonexistant playerId: ", playerId);
-        return;
-     }
-     
      RemotePlayer remotePlayer = remotePlayers.get(playerId);
+     
+     if(remotePlayer == null) {
+        println("Nonexistant playerId: ", playerId);
+        return; 
+     }
     
      remotePlayer.network_shadow_x = x;
      remotePlayer.network_shadow_y = y;
@@ -48,6 +48,11 @@ class Game implements MessageReceiver {
    
    void receivedShot(int playerId, ArrayList<Point> endsOfShots) {
      RemotePlayer remotePlayer = remotePlayers.get(playerId);
+     
+     if(remotePlayer == null) {
+        println("Received SHOT with wrong player id: ", playerId);
+        return;
+     }
      
      /*
      for(Point pt: endsOfShots) {
