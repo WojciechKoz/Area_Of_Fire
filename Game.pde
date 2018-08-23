@@ -75,6 +75,7 @@ class Game implements MessageReceiver {
      if(you.hp <= 0) {
        GP = Game_position.menu;
        return;
+      //you = new LocalPlayer();
      }  
      
      if(hp <= 0) {  
@@ -89,6 +90,13 @@ class Game implements MessageReceiver {
        return;
      }
      player.hp = hp;
+   }
+   
+   void receivedDisconnect(int playerId) { 
+     if(remotePlayers.get(playerId) != null ) {
+        newMessage(remotePlayers.get(playerId).nick + " left the game!");      
+        remotePlayers.remove(playerId);
+     }
    }
    
    void frame() {

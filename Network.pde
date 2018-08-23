@@ -11,6 +11,7 @@ interface MessageReceiver {
    void receivedShot(int playerId, ArrayList<Point> endsOfShots);
    void receivedSetHp(int playerId, int hp, int shooterId);
    void receivedSetHp(int playerId, int hp);
+   void receivedDisconnect(int playerId);
 }
 
 private enum ReceivedMessageType {
@@ -18,6 +19,7 @@ private enum ReceivedMessageType {
   PLAYER_MOVE,
   SHOT,
   SET_HP,
+  DISCONNECT,
 }
 
 class Network {
@@ -221,6 +223,13 @@ class Network {
             throw new RuntimeException("Unexpected SET_HP array length"); 
           }
           break;
+        }
+        
+        case DISCONNECT: {
+          assert unpacker.unpackArrayHeader() == 1;
+          int playerId = unpacker.unpackInt();
+          
+          mr.receivedDisconnect(playerId);
         }
       }
     }
