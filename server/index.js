@@ -50,7 +50,7 @@ function sendQueuedMessagesToClient(client) {
 		return;
 	}
 
-	if(client == null || client.socket == null || client.alreadyDisconnected) {
+	if(client == null || client.socket == null) {
 		console.warn(`Tried to send messages to an undefined/disconnected client ${client.clientId}`)
 		return;
 	}
@@ -217,9 +217,10 @@ function getRidOf(client) {
 
 	console.log(`Getting rid of ${client.clientId}`);
 
+	client.alreadyDisconnected = true;
+
 	sendQueuedMessagesToClient(client);
 
-	client.alreadyDisconnected = true;
 	client.socket.end();
 	delete allClients[client.clientId];
 	if(client.socket && client.socket.disconnectTimeout)
