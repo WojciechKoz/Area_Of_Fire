@@ -14,6 +14,8 @@ const PLAYER_RADIUS = 15;
 
 const TIMEOUT_KICK = 20000; // 20 s
 
+const TICK_INTERVAL = 1000/50; // how frequest send messages to clients
+
 const MSGS_SEND = {
 	NEW_PLAYER: 0,
 	PLAYER_MOVE: 1,
@@ -41,37 +43,55 @@ function resetTimeout(socket) {
 	socket.disconnectTimeout.refresh();
 }
 
-// Pack a message and send it to socket
-function messageToSocket(socket, message) {
-	if(socket == null) {
-		console.warn(`Tried to send ${message} to an undefined socket`)
+function sendQueuedMessagesToClient(client) {
+	if(client.queuedMessages && client.queuedMessages.length == 0) {
+		return;
 	}
-	socket.write(msgpack.pack(message));
+
+	if(client == null || client.socket == null || client.alreadyDisconnected) {
+		console.warn(`Tried to send messages to an undefined/disconnected client ${client.clientId}`)
+		return;
+	}
+
+	client.socket.write(msgpack.pack(client.queuedMessages));
+
+	client.queuedMessages = [];
+}
+
+function tick() {
+	allClients.forEach(client => {
+		sendQueuedMessagesToClient(client);
+	});
+}
+
+// Queue a message to send it to client
+function messageToClient(client, topic, message) {
+	if(client == null || client.socket == null || client.alreadyDisconnected) {
+		console.warn(`Tried to queue message [${topic}, ${message}] for an undefined/disconnected client ${client.clientId}`)
+		return;
+	}
+	client.queuedMessages.push(topic, message)
+	//socket.write(msgpack.pack(message));
 }
 
 // send all existing players' nicknames to a newly connected player
-function sendGameStateToNewPlayer(socket) {
-	var message = [];
-	for (var clientIdx in allClients) {
-		var client = allClients[clientIdx];
-		if(client.nickname != null) {
-			message.push(MSGS_SEND.NEW_PLAYER);
-			message.push([client.clientId, client.nickname]);
+function sendGameStateToNewPlayer(newClient) {
+	allClients.forEach(client => {
+		if(client.nickname == null)
+			return;
 
-			message.push(MSGS_SEND.SET_HP);
-			message.push([client.clientId, client.hp]);
+		messageToClient(newClient, MSGS_SEND.NEW_PLAYER, [client.clientId, client.nickname]);
 
-			message.push(MSGS_SEND.PLAYER_MOVE);
-			message.push([client.clientId, client.x, client.y, client.flags, client.weapon]);
-		}
-	}
-	messageToSocket(socket, message);
+		messageToClient(newClient, MSGS_SEND.SET_HP, [client.clientId, client.hp]);
+
+		messageToClient(newClient, MSGS_SEND.PLAYER_MOVE, [client.clientId, client.x, client.y, client.flags, client.weapon]);
+	});
 }
 
-function sendToAllExcept(clientId, message) {
+function sendToAllExcept(clientId, topic, message) {
 	allClients.forEach(client => {
 		if(client.clientId != clientId) {
-			messageToSocket(client.socket, message);
+			messageToClient(client, topic, message);
 		}
 	})
 }
@@ -104,7 +124,7 @@ function decreaseHp({ hit, shooter }) {
 		var hitId = (client.clientId == hit.clientId) ? -1 : hit.clientId;
 		var shooterId = (client.clientId == shooter.clientId) ? -1 : shooter.clientId;
 
-		messageToSocket(client.socket, [MSGS_SEND.SET_HP, [hitId, hit.hp, shooterId]]);
+		messageToClient(client, MSGS_SEND.SET_HP, [hitId, hit.hp, shooterId]);
 	});
 
 	if(hit.hp <= 0)
@@ -132,60 +152,60 @@ function handleShot(shootingClient, bulletEnd) {
 
 // All message types possible to receive from the client
 var handleMessage = []
-handleMessage[MSGS_RECEIVE.SET_NICKNAME] = function(clientInfo, arg) {
+handleMessage[MSGS_RECEIVE.SET_NICKNAME] = function(client, arg) {
 	arg = "" + arg;
 
 	console.log(`Nickname = ${arg}`)
-	clientInfo.nickname = arg;
-	sendToAllExcept(clientInfo.clientId, [MSGS_SEND.NEW_PLAYER, [clientInfo.clientId, arg]])
+	client.nickname = arg;
+	sendToAllExcept(client.clientId, MSGS_SEND.NEW_PLAYER, [client.clientId, arg])
 }
-handleMessage[MSGS_RECEIVE.PLAYER_MOVE] = function(clientInfo, arg) {
+handleMessage[MSGS_RECEIVE.PLAYER_MOVE] = function(client, arg) {
 	// arg is [x:float, y:float, flags:short, weapon:int]
 	if(!Array.isArray(arg) || arg.length != 4) {
-		console.warn(`Malformed PLAYER_MOVE from client ${clientInfo.clientId}`);
+		console.warn(`Malformed PLAYER_MOVE from client ${client.clientId}`);
 		return;
 	}
 
 	var [x, y, flags, weapon] = arg;
 
-	clientInfo.x = x;
-	clientInfo.y = y;
-	clientInfo.flags = flags;
-	clientInfo.weapon = weapon;
+	client.x = x;
+	client.y = y;
+	client.flags = flags;
+	client.weapon = weapon;
 
-	var message = [MSGS_SEND.PLAYER_MOVE, [clientInfo.clientId, x, y, flags, weapon]];
-	// console.log(message)
-	sendToAllExcept(clientInfo.clientId, message);
+	sendToAllExcept(client.clientId, MSGS_SEND.PLAYER_MOVE, [client.clientId, x, y, flags, weapon]);
 }
-handleMessage[MSGS_RECEIVE.SHOT_WEAPON] = function(clientInfo, arg) {
+handleMessage[MSGS_RECEIVE.SHOT_WEAPON] = function(client, arg) {
 	// arg is [ x, y, x, y, ... ]
 	console.log(`Received shot! ${arg}`);
 	if(!Array.isArray(arg) || arg.filter(num => typeof num !== 'number').length > 0) {
-		console.warn(`SHOT from ${clientInfo.clientId}: argument is not a number array: ${arg}`);
+		console.warn(`SHOT from ${client.clientId}: argument is not a number array: ${arg}`);
 		return;
 	}
 
-	sendToAllExcept(clientInfo.clientId, [MSGS_SEND.SHOT, [ clientInfo.clientId ].concat(arg)]);
+	sendToAllExcept(client.clientId, MSGS_SEND.SHOT, [ client.clientId ].concat(arg));
 
 	for(var i = 0, len = arg.length; i < len; i += 2) {
-		handleShot(clientInfo, new math.Point(arg[i], arg[i + 1]));
+		handleShot(client, new math.Point(arg[i], arg[i + 1]));
 	}
 }
 
 
-function getRidOf(clientInfo) {
-	if(clientInfo.alreadyDisconnected == false) {
-		clientInfo.alreadyDisconnected = true;
+function getRidOf(client) {
+	if(client.alreadyDisconnected == true)
+		return;
 
-		console.log(`Getting rid of ${clientInfo.clientId}`);
+	console.log(`Getting rid of ${client.clientId}`);
 
-		clientInfo.socket.end();
-		delete allClients[clientInfo.clientId];
-		if(clientInfo.socket && clientInfo.socket.disconnectTimeout)
-			clearTimeout(clientInfo.socket.disconnectTimeout);
+	sendQueuedMessagesToClient(client);
 
-		sendToAllExcept(clientInfo.clientId, [MSGS_SEND.PLAYER_DISCONNECT, [clientInfo.clientId]]);
-	}
+	client.alreadyDisconnected = true;
+	client.socket.end();
+	delete allClients[client.clientId];
+	if(client.socket && client.socket.disconnectTimeout)
+		clearTimeout(client.socket.disconnectTimeout);
+
+	sendToAllExcept(client.clientId, MSGS_SEND.PLAYER_DISCONNECT, [client.clientId]);
 }
 
 var server = net.createServer(function(socket) {
@@ -198,9 +218,6 @@ var server = net.createServer(function(socket) {
 		getRidOf(clientInfo);
 	}, TIMEOUT_KICK);
 
-	sendGameStateToNewPlayer(socket);
-	//messageToSocket(socket, [MSGS_SEND.PLAYER_MOVE, [123, 1.5, 1.5, 1.5, 1.5]])
-
 	var clientInfo = {
 		clientId: newClientId(),
 		nickname: null,
@@ -210,8 +227,11 @@ var server = net.createServer(function(socket) {
 		weapon: 0,
 		hp: 5,
 		alreadyDisconnected: false,
+		queuedMessages: [],
 		socket,
 	}
+
+	sendGameStateToNewPlayer(clientInfo);
 
 	allClients[clientInfo.clientId] = clientInfo;
 
@@ -254,5 +274,6 @@ var server = net.createServer(function(socket) {
 });
 
 server.listen(7543, '0.0.0.0', function() {
+	setInterval(tick, 1000/50);
 	console.log('Listening');
 });
