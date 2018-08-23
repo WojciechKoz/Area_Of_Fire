@@ -145,7 +145,12 @@ class Network {
            }
            
            ReceivedMessageType msgType = messageTypeValues[messageTypeIndex];
-           handleSingleMessage(msgType, unpacker);
+           try {
+             handleSingleMessage(msgType, unpacker);
+           } catch(IOException ex) {
+              ex.printStackTrace();
+              return;
+           }
        }
     }
     

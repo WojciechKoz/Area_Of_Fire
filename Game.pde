@@ -10,13 +10,20 @@ class Game implements MessageReceiver {
    Game() {
       map = new Map(); 
       you = new LocalPlayer();
-      network = new Network(this, nick);
+      network = new Network(this, you.nick);
    }
    
-   Player getPlayerById(int id) {
+   private Player getPlayerById(int id) {
      if(id == -1)
        return you;
      return remotePlayers.get(id);
+   }
+   
+   private void newMessage(String message) {
+     if(news.size() >= 4)
+       news.remove(0);
+     
+     news.add(message);
    }
    
    void receivedNewPlayer(int playerId, String name) {
@@ -25,6 +32,8 @@ class Game implements MessageReceiver {
      println("Received info about new player, id=", playerId, " name=", name);
      
      rp.nick = name;
+     
+     newMessage(rp.nick + " joined the game!");
    }
    
    void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run, int gunId) {
@@ -78,13 +87,8 @@ class Game implements MessageReceiver {
        return;
      }  
      
-     if(hp <= 0) {
-       String newMessage = shooter.nick + " killed " + shot.nick + " by " + shooter.gun.name;
-        
-       if(news.size() >= 4)
-         news.remove(0);
-       
-       news.add(newMessage);
+     if(hp <= 0) {  
+       newMessage(shooter.nick + " killed " + shot.nick + " by " + shooter.gun.name);
      }
    }
 
@@ -117,11 +121,13 @@ class Game implements MessageReceiver {
     textSize(30);
     text("hp " + you.hp + " / " + you.max_hp, 20, 30);
     text(you.gun.name + " " + you.gun.ammo + "/" + you.gun.max_ammo, 20, height-30);
-    
+
     fill(255);
     textSize(18);
     for(int i = 0; i < news.size(); i++)
       text(news.get(i), 2*width/3, 20 * i + 20);
+      
+    text("FPS " + int(frameRate), width - 70, height - 20);
     
   }
   
@@ -137,7 +143,7 @@ class Game implements MessageReceiver {
     
       
     if(key == 'q' || key == 'Q')  
-      you.gun = new Weapon("pistol");
+      you.gun = new Weapon("M4");
   
     if(key == 'm' || key == 'M') {
        GP = Game_position.menu;

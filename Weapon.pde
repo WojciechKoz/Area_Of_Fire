@@ -173,7 +173,7 @@ class Weapon {
            id = 0;
         }break;
      }
-     before = millis() + 400 - fire_rate;
+     before = millis() + 750 - fire_rate;
      playsound("overload.wav");
      ammo = max_ammo;
  }

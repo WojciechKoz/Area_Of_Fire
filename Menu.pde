@@ -3,6 +3,7 @@ class Menu {
   Menu() {}
   
   void show() {
+    textSize(30);
     background(100, 200, 200);
     fill(255, 0, 0);
     rect(width/2, height/2, 150, 50); 
@@ -15,7 +16,7 @@ class Menu {
     text("sandbox", width/2 + 20 , height/2 + 108); 
     
     text("your nick: ", 100, height - 100);
-    text(nick, 250, height - 100);
+    text(localnick, 250, height - 100);
     fill(255, 0, 0);
     rect(100, height - 80, 100, 40);
     fill(0);
@@ -39,7 +40,7 @@ class Menu {
       if(point_in_rect(mouseX, mouseY, 100, height - 80, 100, 40)) {
         if(GP == Game_position.menu) {
           GP = Game_position.input;
-          nick = ""; 
+          localnick = ""; 
         }
         else
           GP = Game_position.menu;
@@ -49,10 +50,10 @@ class Menu {
   void textEdit() {
      if(keyCode == ENTER)
        GP = Game_position.menu;
-     if(keyCode == BACKSPACE && nick.length() > 0) 
-       nick = nick.substring(0, nick.length()-1);    
+     if(keyCode == BACKSPACE && localnick.length() > 0) 
+       localnick = localnick.substring(0, localnick.length()-1);    
      if((char)key >= 32 && (char)key <= 125)
-       nick += (char)key; 
+       localnick += (char)key; 
   }
   
 }

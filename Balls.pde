@@ -102,6 +102,7 @@ class Balls {
     if(lvl.number == 9) {
       main.show();
       GP = Game_position.menu;
+      return;
     }
     player.gun = new Weapon("pistol");
     lvl = new Level(lvl.number+1);

@@ -32,8 +32,8 @@ class BPlayer {
             
       if(gun.ammo < 0 ) {
         gun.ammo = 0;
-        if(gun.name != "pistol")
-          gun = new Weapon("pistol");
+       // if(gun.name != "pistol")
+        gun = new Weapon("pistol");
         return;
       }
       
