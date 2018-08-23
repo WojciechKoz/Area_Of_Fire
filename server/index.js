@@ -175,10 +175,12 @@ handleMessage[MSGS_RECEIVE.SHOT_WEAPON] = function(clientInfo, arg) {
 
 function getRidOf(clientInfo) {
 	if(clientInfo.alreadyDisconnected == false) {
+		clientInfo.alreadyDisconnected = true;
+
 		console.log(`Getting rid of ${clientInfo.clientId}`);
 		clientInfo.socket.end();
+		delete allClients[clientInfo.clientId];
 		sendToAllExcept(clientInfo.clientId, [MSGS_SEND.PLAYER_DISCONNECT, [clientInfo.clientId]]);
-		clientInfo.alreadyDisconnected = true;
 	}
 }
 
@@ -189,7 +191,7 @@ var server = net.createServer(function(socket) {
 
 	socket.disconnectTimeout = setTimeout(function() {
 		console.log(`Kicking ${socket} due to inactivity`);
-		socket.end();
+		getRidOf(clientInfo);
 	}, TIMEOUT_KICK);
 
 	sendGameStateToNewPlayer(socket);
