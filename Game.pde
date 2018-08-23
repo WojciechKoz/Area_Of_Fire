@@ -1,9 +1,10 @@
 
-class Game implements MessageReceiver {
+class Game implements MessageReceiver, TypedChatMessageReceiver {
    Map map;
    LocalPlayer you;
    HashMap<Integer, RemotePlayer> remotePlayers = new HashMap<Integer, RemotePlayer>();
    ArrayList<String> news = new ArrayList<String>();
+   ChatMessage writingChatMessage;
    
    Network network;
    
@@ -24,7 +25,7 @@ class Game implements MessageReceiver {
    }
    
    private void newMessage(String message) {
-     if(news.size() >= 4)
+     if(news.size() >= 6)
        news.remove(0);
      
      news.add(message);
@@ -114,6 +115,15 @@ class Game implements MessageReceiver {
      }
    }
    
+   void receivedChatMessage(String msg) {
+     newMessage(msg);
+   }
+   
+   void playerTypedChatMessage(String msg) {
+     network.sendChatMessage(msg);
+   }
+
+   
    void frame() {
     network.tick();
     network.sendState(you.x, you.y, you.crouch, you.run, you.gun.id, you.shotsPoints);
@@ -139,12 +149,37 @@ class Game implements MessageReceiver {
     textSize(18);
     for(int i = 0; i < news.size(); i++)
       text(news.get(i), 2*width/3, 20 * i + 20);
-      
+    if(writingChatMessage != null)
+      text(writingChatMessage.getTypingMessage(), 2*width/3, 20 * news.size() + 20);  
+    
     text("FPS " + int(frameRate), width - 70, height - 20);
     
   }
   
+  void keys_typed(KeyEvent ev) {
+    if(writingChatMessage == null) {
+      if(ev.getKey() == 't') {
+        writingChatMessage = new ChatMessage(this);
+      }
+      
+      return;
+    }
+    
+    writingChatMessage.keys_typed(ev);
+  }
+  
   void keys_down() {
+    if(writingChatMessage != null) {
+      if(key == BACKSPACE) {
+        writingChatMessage.backspace();
+      } else if(key == ENTER || key == RETURN) {
+        writingChatMessage.finalise();
+        writingChatMessage = null;
+      }
+      return;
+    }
+
+      
     if(hasKey('a', you))
       you.keys.add('a');
     if(hasKey('d', you))

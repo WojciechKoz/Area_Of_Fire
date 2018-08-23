@@ -3,7 +3,7 @@ import processing.net.*;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessagePacker;
 import org.msgpack.core.MessageUnpacker;
-import org.msgpack.value.*;
+import org.msgpack.value.ImmutableValue;
 
 interface MessageReceiver {    
    void receivedNewPlayer(int playerId, String name); 
@@ -12,6 +12,7 @@ interface MessageReceiver {
    void receivedSetHp(int playerId, int hp, int shooterId);
    void receivedSetHp(int playerId, int hp);
    void receivedDisconnect(int playerId);
+   void receivedChatMessage(String msg);
 }
 
 private enum ReceivedMessageType {
@@ -20,12 +21,14 @@ private enum ReceivedMessageType {
   SHOT,
   SET_HP,
   DISCONNECT,
+  CHAT,
 }
 
 class Network {
     private final int SEND_SET_NICKNAME = 0;
     private final int SEND_MOVE = 1;
     private final int SEND_SHOT = 2;
+    private final int SEND_CHAT = 3;
     
     private final int BUFFER_LEN = 4096;
   
@@ -57,6 +60,20 @@ class Network {
         }
       }
       endsOfBullet.clear();
+    }
+    
+    public void sendChatMessage(String msg) {
+      println("message", msg);
+      
+      try {
+        packer.packArrayHeader(2);
+        packer.packInt(SEND_CHAT);
+        packer.packString(msg);
+        packer.flush();
+      } catch(IOException ex) {
+        println("Failed sending a chat message");
+        ex.printStackTrace();
+      }
     }
     
     public void sendState(float x, float y, boolean crouch, boolean run, int gunId, ArrayList<Point> endsOfBullet) {
@@ -99,7 +116,7 @@ class Network {
     
     Network(MessageReceiver mr, String nickname) {
         this.mr = mr;
-        client = new Client(Area_Of_Fire.this, "35.228.141.175", 7543);
+        client = new Client(Area_Of_Fire.this, "127.0.0.1", 7543);
         
         if(!client.active()) {
           println("Could not connect to server");
@@ -235,6 +252,15 @@ class Network {
           int playerId = unpacker.unpackInt();
           
           mr.receivedDisconnect(playerId);
+          break;
+        }
+        
+        case CHAT: {
+          assert unpacker.unpackArrayHeader() == 1;
+          String message = unpacker.unpackString();
+          
+          mr.receivedChatMessage(message);
+          break;
         }
       }
     }

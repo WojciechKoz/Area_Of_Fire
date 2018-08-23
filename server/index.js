@@ -22,12 +22,14 @@ const MSGS_SEND = {
 	SHOT: 2,
 	SET_HP: 3,
 	PLAYER_DISCONNECT: 4,
+	CHAT: 5,
 };
 
 const MSGS_RECEIVE = {
 	SET_NICKNAME: 0,
 	PLAYER_MOVE: 1,
 	SHOT_WEAPON: 2,
+	CHAT: 3,
 }
 
 var _lastClientId = 1;
@@ -94,6 +96,11 @@ function sendToAllExcept(clientId, topic, message) {
 			messageToClient(client, topic, message);
 		}
 	})
+}
+function sendToAll(topic, message) {
+	allClients.forEach(client => {
+		messageToClient(client, topic, message);
+	});
 }
 
 function weaponDamage(weaponId) {
@@ -188,6 +195,19 @@ handleMessage[MSGS_RECEIVE.SHOT_WEAPON] = function(client, arg) {
 	for(var i = 0, len = arg.length; i < len; i += 2) {
 		handleShot(client, new math.Point(arg[i], arg[i + 1]));
 	}
+}
+handleMessage[MSGS_RECEIVE.CHAT] = function(client, arg) {
+	arg = "" + arg;
+
+	console.log(`Chat from ${client.clientId} (${client.nickname}): ${arg}`);
+
+	if(arg.length > 500) {
+		console.warn(`Received chat message of length ${arg.length}.\n` +
+			`\tSince the client does not send messages longer than 200 characters, this is highly suspicious. Not relaying.`);
+		return;
+	}
+
+	sendToAll(MSGS_SEND.CHAT, [`${client.nickname}: ${arg}`]);
 }
 
 

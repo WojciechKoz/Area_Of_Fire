@@ -32,6 +32,9 @@ void setup() {
   frameRate(50);
   
   surface.setResizable(true);
+  
+  game = new Game();
+        GP = Game_position.game;
 }
 
 
@@ -88,5 +91,13 @@ void keyReleased() {
       miniGame.keys_up(); break;
     case game:
       game.keys_up(); 
+  }
+}
+
+
+void keyTyped(KeyEvent ev) {
+  switch(GP) {
+    case game:
+      game.keys_typed(ev);
   }
 }
