@@ -18,7 +18,8 @@ const MSGS_SEND = {
 	NEW_PLAYER: 0,
 	PLAYER_MOVE: 1,
 	SHOT: 2,
-	SET_HP: 3
+	SET_HP: 3,
+	PLAYER_DISCONNECT: 4,
 };
 
 const MSGS_RECEIVE = {
@@ -105,6 +106,9 @@ function decreaseHp({ hit, shooter }) {
 
 		messageToSocket(client.socket, [MSGS_SEND.SET_HP, [hitId, hit.hp, shooterId]]);
 	});
+
+	if(hit.hp <= 0)
+		getRidOf(hit);
 }
 
 function handleShot(shootingClient, bulletEnd) {
@@ -169,6 +173,14 @@ handleMessage[MSGS_RECEIVE.SHOT_WEAPON] = function(clientInfo, arg) {
 }
 
 
+function getRidOf(clientInfo) {
+	if(clientInfo.alreadyDisconnected == false) {
+		clientInfo.socket.end();
+	}
+	clientInfo.alreadyDisconnected = true;
+	sendToAllExcept(clientInfo.clientId, [MSGS_SEND.PLAYER_DISCONNECT, [clientInfo.clientId]]);
+}
+
 var server = net.createServer(function(socket) {
 	console.log('connected')
 
@@ -190,6 +202,7 @@ var server = net.createServer(function(socket) {
 		flags: 0,
 		weapon: 0,
 		hp: 5,
+		alreadyDisconnected: false,
 		socket,
 	}
 
@@ -217,13 +230,19 @@ var server = net.createServer(function(socket) {
 		}
 	});
 
+
 	socket.on('end', function() {
-		// TODO: tell other players this player is disconnected
-		delete allClients[clientInfo.clientId];
+		console.log(`Disconnecting ${clientInfo.clientId} due to 'end' event:`, err)
+		getRidOf(clientInfo);
+	});
+	socket.on('close', function() {
+		console.log(`Disconnecting ${clientInfo.clientId} due to 'close' event:`, err)
+		getRidOf(clientInfo);
 	});
 
 	socket.on('error', function(err) {
-		console.log(err)
+		console.log(`Disconnecting ${clientInfo.clientId} due to error:`, err)
+		getRidOf(clientInfo);
 	})
 });
 
