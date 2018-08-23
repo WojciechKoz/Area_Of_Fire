@@ -233,11 +233,11 @@ var server = net.createServer(function(socket) {
 
 
 	socket.on('end', function() {
-		console.log(`Disconnecting ${clientInfo.clientId} due to 'end' event:`, err)
+		console.log(`Disconnecting ${clientInfo.clientId} due to 'end' event:`)
 		getRidOf(clientInfo);
 	});
 	socket.on('close', function() {
-		console.log(`Disconnecting ${clientInfo.clientId} due to 'close' event:`, err)
+		console.log(`Disconnecting ${clientInfo.clientId} due to 'close' event:`)
 		getRidOf(clientInfo);
 	});
 
