@@ -181,7 +181,8 @@ function getRidOf(clientInfo) {
 
 		clientInfo.socket.end();
 		delete allClients[clientInfo.clientId];
-		clearTimeout(socket.disconnectTimeout);
+		if(clientInfo.socket && clientInfo.socket.disconnectTimeout)
+			clearTimeout(clientInfo.socket.disconnectTimeout);
 
 		sendToAllExcept(clientInfo.clientId, [MSGS_SEND.PLAYER_DISCONNECT, [clientInfo.clientId]]);
 	}
