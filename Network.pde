@@ -92,6 +92,11 @@ class Network {
         }
     }
     
+    public void close() {
+      if(client.active())
+        client.stop();
+    }
+    
     Network(MessageReceiver mr, String nickname) {
         this.mr = mr;
         client = new Client(Area_Of_Fire.this, "35.228.141.175", 7543);

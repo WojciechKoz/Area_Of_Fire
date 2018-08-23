@@ -13,6 +13,10 @@ class Game implements MessageReceiver {
       network = new Network(this, you.nick);
    }
    
+   public void close() {
+      network.close(); 
+   }
+   
    private Player getPlayerById(int id) {
      if(id == -1)
        return you;
@@ -84,6 +88,7 @@ class Game implements MessageReceiver {
      
      if(you.hp <= 0) {
        GP = Game_position.menu;
+       close();
        return;
       //you = new LocalPlayer();
      }  
@@ -155,6 +160,7 @@ class Game implements MessageReceiver {
   
     if(key == 'm' || key == 'M') {
        GP = Game_position.menu;
+       close();
        main.show();
     }  
     if(keyCode == SHIFT) 
