@@ -17,9 +17,6 @@ class RemotePlayer extends Player {
   void print_it(float imag_x, float imag_y, Map map) {
     if(!hasReceivedMove)
       return;
-
-    if(hp <= 0)
-      return;
     
     float movementSpeed = 250;
    
