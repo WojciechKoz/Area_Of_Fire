@@ -178,8 +178,11 @@ function getRidOf(clientInfo) {
 		clientInfo.alreadyDisconnected = true;
 
 		console.log(`Getting rid of ${clientInfo.clientId}`);
+
 		clientInfo.socket.end();
 		delete allClients[clientInfo.clientId];
+		clearTimeout(socket.disconnectTimeout);
+
 		sendToAllExcept(clientInfo.clientId, [MSGS_SEND.PLAYER_DISCONNECT, [clientInfo.clientId]]);
 	}
 }
