@@ -9,11 +9,12 @@ import beads.*;
 AudioContext ac;
 PFont font;
 
+
 // parameters
 enum Game_position {game, balls, menu, input};
 Game_position GP = Game_position.menu;
 
-String nick = "default";
+String localnick = "default";
 
 Menu main = new Menu(); 
 Game game;
@@ -22,12 +23,10 @@ Balls miniGame;
 void setup() { 
   //fullScreen(P3D, SPAN);
   size(900, 700, P2D); // trudno testować multiplayer na fullscreenie
-  
+  font = createFont("Arial", 30);
   background(100, 70, 130);
   cursor(CROSS);
-  font = createFont("Arial", 30);
   textFont(font);
- // noLoop();
   main.show();
   
   frameRate(50);
