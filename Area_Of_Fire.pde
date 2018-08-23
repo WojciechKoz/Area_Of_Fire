@@ -32,9 +32,6 @@ void setup() {
   frameRate(50);
   
   surface.setResizable(true);
-  
-  game = new Game();
-        GP = Game_position.game;
 }
 
 
