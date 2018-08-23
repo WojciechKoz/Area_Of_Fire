@@ -175,10 +175,11 @@ handleMessage[MSGS_RECEIVE.SHOT_WEAPON] = function(clientInfo, arg) {
 
 function getRidOf(clientInfo) {
 	if(clientInfo.alreadyDisconnected == false) {
+		console.log(`Getting rid of ${clientInfo.clientId}`);
 		clientInfo.socket.end();
+		sendToAllExcept(clientInfo.clientId, [MSGS_SEND.PLAYER_DISCONNECT, [clientInfo.clientId]]);
+		clientInfo.alreadyDisconnected = true;
 	}
-	clientInfo.alreadyDisconnected = true;
-	sendToAllExcept(clientInfo.clientId, [MSGS_SEND.PLAYER_DISCONNECT, [clientInfo.clientId]]);
 }
 
 var server = net.createServer(function(socket) {
