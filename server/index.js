@@ -235,16 +235,16 @@ var server = net.createServer(function(socket) {
 
 
 	socket.on('end', function() {
-		console.log(`Disconnecting ${clientInfo.clientId} due to 'end' event:`)
+		console.log(`Received an 'end' event on client ${clientInfo.clientId}, will get rid of if needed`)
 		getRidOf(clientInfo);
 	});
 	socket.on('close', function() {
-		console.log(`Disconnecting ${clientInfo.clientId} due to 'close' event:`)
+		console.log(`Received a 'close' event on client ${clientInfo.clientId}, will get rid of if needed`)
 		getRidOf(clientInfo);
 	});
 
 	socket.on('error', function(err) {
-		console.log(`Disconnecting ${clientInfo.clientId} due to error:`, err)
+		console.log(`Received an error on socket for client ${clientInfo.clientId}, getting rid if needed:`, err)
 		getRidOf(clientInfo);
 	})
 });
