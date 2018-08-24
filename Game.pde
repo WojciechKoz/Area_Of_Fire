@@ -348,6 +348,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
       
         if(key == 'm' || key == 'M') {
            GP = Game_position.menu;
+           close();
            main.show();
         }  
         if(keyCode == SHIFT) 

@@ -32,6 +32,7 @@ const MSGS_RECEIVE = {
 	SHOT_WEAPON: 2,
 	CHAT: 3,
 	SET_TEAM: 4,
+	RESPAWN: 5,
 }
 
 var _lastClientId = 1;
@@ -136,8 +137,8 @@ function decreaseHp({ hit, shooter }) {
 		messageToClient(client, MSGS_SEND.SET_HP, [hitId, hit.hp, shooterId]);
 	});
 
-	if(hit.hp <= 0)
-		getRidOf(hit);
+	//if(hit.hp <= 0)
+		//getRidOf(hit);
 }
 
 function handleShot(shootingClient, bulletEnd) {
@@ -216,6 +217,14 @@ handleMessage[MSGS_RECEIVE.SET_TEAM] = function(client, arg) {
 
 	console.log(`Changing team of ${client.clientId} to ${arg} (${(arg == 0) ? 'blue' : (arg == 1) ? 'red' : 'not valid team id'})`);
 	sendToAllExcept(client.clientId, MSGS_SEND.SET_TEAM, [client.clientId, arg]);
+}
+handleMessage[MSGS_RECEIVE.RESPAWN] = function(client, arg) {
+	console.log(`Respawning ${client.clientId}`);
+
+	client.hp = 5;
+	
+	sendToAllExcept(client.clientId, MSGS_SEND.SET_HP, [client.clientId, client.hp]);
+	messageToClient(client, MSGS_SEND.SET_HP, [-1, client.hp]);
 }
 
 
