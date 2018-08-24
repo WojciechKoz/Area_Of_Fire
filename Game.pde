@@ -7,24 +7,6 @@ public enum GameSwitch {
   STATS,
 };
 
-public enum ShopSwitch {
-  PISTOLS(0),
-  SMGS(1),
-  SHOTGUNS(2),
-  RIFLES(3),
-  HEAVY(4);
-  
-  private int value;
-  
-  private ShopSwitch(int v) {
-    this.value = v; 
-  }
-  
-  public int value() {
-    return this.value; 
-  }
-};
-
 class Game implements MessageReceiver, TypedChatMessageReceiver {
    Map map;
    LocalPlayer you;
@@ -32,7 +14,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
    ArrayList<String> news = new ArrayList<String>();
    ChatMessage writingChatMessage;
    GameSwitch state = GameSwitch.NEW;
-   ShopSwitch shopState;
+   Shop shop;
    int bluePoints = 0, redPoints = 0;
    
    Network network;
@@ -111,8 +93,6 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
      shot.hp = hp;
      
      if(you.hp <= 0) {
-       you.x = -3000; // visible = false ? 
-       you.y = -3000;
        state = GameSwitch.DEAD;
      }  
      
@@ -156,7 +136,8 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
    
    void frame() {
     network.tick();
-    network.sendState(you.x, you.y, you.crouch, you.run, you.gun.id, you.shotsPoints);
+    if(state == GameSwitch.MAP)
+      network.sendState(you.x, you.y, you.crouch, you.run, you.gun.id, you.shotsPoints);
      
     background(150, 200, 200); 
     
@@ -198,57 +179,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
         break;
       }
       case SHOP: {
-        fill(100, 0, 0);
-        rect(0.1*width, 0.1*height, 0.8*width, 0.8*height); // shop background
-         
-        // buttons
-        
-        stroke(0);
-        strokeWeight(2);
-        textSize(30);
-        
-        float buttonWi = 0.14*width;
-        float buttonHe = 0.05*height;
-        String [] names = {"Pistiols", "SMGs", "Shotguns", "Rifles", "Heavy"};
-        
-        for(int i = 0; i < 5; i++) {
-          if(shopState.value() == i)
-            fill(50, 50, 255);
-          else
-            fill(255, 0, 0);
-            
-          rect(0.1*width + i*buttonWi, 0.1*height, buttonWi, buttonHe);
-          
-          fill(0);
-          text(names[i], 0.1*width + i*buttonWi, 0.14*height);         
-        }
-        fill(255, 0, 0);
-        rect(0.87*width, 0.1*height, 0.03*width, buttonHe);
-        
-        for(int i = 0; i < 5; i++) {
-          rect(0.15*width, 0.2*height + i*buttonHe*2, buttonWi, buttonHe);      
-        }
-        
-        fill(0);
-        text("X", 0.875*width, 0.14*height);
-        
-        switch(shopState) {
-          case PISTOLS: {
-            break;  
-          }
-          case SMGS: {
-            break;
-          }
-          case SHOTGUNS: {
-            break; 
-          }
-          case RIFLES: {
-            break; 
-          }
-          case HEAVY: {
-            break; 
-          }
-        }
+        shop.print();
               
         mapInterface();
         
@@ -302,6 +233,10 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
           state = GameSwitch.MAP;
           network.sendRespawn();
          }
+         break;
+       }
+       case SHOP: {
+         shop.click();     
          break;
        }
          
@@ -361,30 +296,14 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
         if(key == ' ')
           you.shoots = true;
         if(key == 'b' || key == 'B') {
-          shopState = ShopSwitch.PISTOLS;
+          shop = new Shop();
           state = GameSwitch.SHOP;         
         }
         break;
       }
       case SHOP: {
-        if(key == 'b' || key == 'B') {         
-          state = GameSwitch.MAP;
-        }
-        if(key == '1' || key == '!') {         
-          shopState = ShopSwitch.PISTOLS;
-        }
-        if(key == '2' || key == '@') {         
-          shopState = ShopSwitch.SMGS;
-        }
-        if(key == '3' || key == '#') {         
-          shopState = ShopSwitch.SHOTGUNS;
-        }
-        if(key == '4' || key == '$') {         
-          shopState = ShopSwitch.RIFLES;
-        }
-        if(key == '5' || key == '%') {         
-          shopState = ShopSwitch.HEAVY;
-        }
+        shop.key_down();
+        break;
       }
     }
   }
@@ -441,4 +360,6 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
       
     text("FPS " + int(frameRate), width - 70, height - 20);
   }
+  
+
 }

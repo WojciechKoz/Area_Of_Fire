@@ -29,8 +29,12 @@ class RemotePlayer extends Player {
   
     x = limit(network_shadow_x, (movementSpeed/frameRate), x);
     y = limit(network_shadow_y, (movementSpeed/frameRate), y);
-   
-    fill(255, 0, 0);
+    
+    if(team == Teams.RED)
+      fill(255, 0, 0);
+    else
+      fill(0, 0, 255);
+      
     draw_hp(hp, max_hp);
     ellipse(imag_x + x, imag_y + y, 2*radius, 2*radius); 
     noStroke();

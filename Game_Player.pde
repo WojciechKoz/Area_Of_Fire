@@ -16,10 +16,10 @@ abstract class Player {
   Point relative = new Point(0,0);
   
   Player() {
-    x = -3000;
-    y = -3000;
+    x = 0;
+    y = 0;
     
-    gun = new Weapon("M4");
+    gun = new Weapon("pistol");
     hp = max_hp;
     run = false;
     crouch = false;
