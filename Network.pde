@@ -131,7 +131,7 @@ class Network {
     
     Network(MessageReceiver mr, String nickname) {
         this.mr = mr;
-        client = new Client(Area_Of_Fire.this, "35.228.141.175", 7543);
+        client = new Client(Area_Of_Fire.this, "area-of-fire.baraniecki.eu", 7543);
         
         if(!client.active()) {
           println("Could not connect to server");
