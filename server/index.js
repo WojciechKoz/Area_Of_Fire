@@ -218,6 +218,8 @@ handleMessage[MSGS_RECEIVE.CHAT] = function(client, arg) {
 handleMessage[MSGS_RECEIVE.SET_TEAM] = function(client, arg) {
 	arg = arg | 0;
 
+	client.team = arg;
+
 	console.log(`Changing team of ${client.clientId} to ${arg} (${(arg == 0) ? 'blue' : (arg == 1) ? 'red' : 'not valid team id'})`);
 	sendToAllExcept(client.clientId, MSGS_SEND.SET_TEAM, [client.clientId, arg]);
 }
