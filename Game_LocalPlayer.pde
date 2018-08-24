@@ -168,4 +168,18 @@ class LocalPlayer extends Player {
       exit();   
     }
   }
+  
+  void respawnState(Map map) {
+    max_hp = 5;
+    hp = max_hp;
+    gun = new Weapon("pistol");
+    
+    if(team == Teams.RED) {
+      x = map.redRespawn.x;
+      y = map.redRespawn.y;
+    } else {
+      x = map.blueRespawn.x;
+      y = map.blueRespawn.y;
+    }
+  } 
 }

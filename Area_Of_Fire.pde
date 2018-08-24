@@ -22,7 +22,7 @@ Balls miniGame;
 
 void setup() { 
   //fullScreen(P3D, SPAN);
-  size(900, 700, P2D); // trudno testować multiplayer na fullscreenie
+  size(1000, 800, P2D); // trudno testować multiplayer na fullscreenie
   font = createFont("Arial", 30);
   background(100, 70, 130);
   cursor(CROSS);

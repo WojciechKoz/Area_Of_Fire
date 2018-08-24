@@ -9,6 +9,7 @@ interface MessageReceiver {
    void receivedNewPlayer(int playerId, String name); 
    void receivedMovePlayer(int playerId, float x, float y, boolean crouch, boolean run, int gunId);
    void receivedShot(int playerId, ArrayList<Point> endsOfShots);
+   void receivedColor(int playerId, int teamColor);
 }
 
 private enum ReceivedMessageType {
