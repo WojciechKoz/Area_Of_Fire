@@ -13,6 +13,10 @@ abstract class Player {
   Teams team;
   int kills, deaths;
   
+  void setHp(int hp) {
+    this.hp = hp; 
+  }
+  
   Point relative = new Point(0,0);
   
   Player() {
@@ -29,6 +33,10 @@ abstract class Player {
     
     kills = 0;
     deaths = 0;
+  }
+  
+  public boolean isAlive() {
+    return hp > 0; 
   }
 }
 

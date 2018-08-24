@@ -90,6 +90,9 @@ function sendGameStateToNewPlayer(newClient) {
 		messageToClient(newClient, MSGS_SEND.SET_HP, [client.clientId, client.hp]);
 
 		messageToClient(newClient, MSGS_SEND.PLAYER_MOVE, [client.clientId, client.x, client.y, client.flags, client.weapon]);
+
+		if(client.team != null)
+			messageToClient(newClient, MSGS_SEND.SET_TEAM, [client.clientId, client.team]);
 	});
 }
 
@@ -266,6 +269,7 @@ var server = net.createServer(function(socket) {
 		hp: 5,
 		alreadyDisconnected: false,
 		queuedMessages: [],
+		team: null,
 		socket,
 	}
 

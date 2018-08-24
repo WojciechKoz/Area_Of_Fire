@@ -73,4 +73,12 @@ class Map {
       w.print_shadow(observer, this);
     } 
   }
+  
+  Point respawnPoint(Teams team) {
+    if(team == Teams.RED)
+      return redRespawn;
+    if(team == Teams.BLUE)
+      return blueRespawn;
+    return null;
+  }
 }

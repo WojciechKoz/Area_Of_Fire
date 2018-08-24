@@ -90,7 +90,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
        return;
      }
      
-     shot.hp = hp;
+     shot.setHp(hp);
      
      if(you.hp <= 0) {
        state = GameSwitch.DEAD;
@@ -117,7 +117,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
        println("Received SET_HP(2) with nonexistant player id: ", playerId);
        return;
      }
-     player.hp = hp;
+     player.setHp(hp);
    }
    
    void receivedDisconnect(int playerId) { 

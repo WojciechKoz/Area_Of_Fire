@@ -13,9 +13,36 @@ class RemotePlayer extends Player {
       y = network_shadow_y;
     }
   }
+  
+  private void comeBackToLife() {
+    Point p = game.map.respawnPoint(team);
+    if(p != null) {
+      x = p.x;
+      y = p.y;
+    }
+  }
+  
+  private void died() {
+    hasReceivedMove = false;
+  }
+  
+  void setHp(int hp) {
+    if(!isAlive() && hp > 0) {
+      comeBackToLife();
+    }
+    
+    if(isAlive() && hp <= 0) {
+      died();
+    }
+    
+    this.hp = hp;
+  }
 
   void print_it(float imag_x, float imag_y, Map map) {
     if(!hasReceivedMove)
+      return;
+      
+    if(!isAlive())
       return;
     
     float movementSpeed = 250;
