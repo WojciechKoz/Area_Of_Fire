@@ -94,7 +94,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
      
      if(you.hp <= 0) {
        state = GameSwitch.DEAD;
-       you.onDeath();
+       you.clearMove();
      }  
      
      if(hp <= 0) {  
@@ -297,7 +297,8 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
           you.shoots = true;
         if(key == 'b' || key == 'B') {
           shop = new Shop();
-          state = GameSwitch.SHOP;         
+          state = GameSwitch.SHOP; 
+          you.clearMove();
         }
         break;
       }

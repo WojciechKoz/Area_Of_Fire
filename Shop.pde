@@ -19,9 +19,17 @@ public enum ShopSwitch {
 class Shop {
   float buttonWi, buttonHe;
   ShopSwitch shopState;
+  String [] indexes = {"Pistols", "SMGs", "Shotguns", "Rifles", "Heavy"};
+  String [] pistols = {"pistol"};
+  String [] SMGs = {"mac", "mp5", "P90"};
+  String [] shotguns = {"shotgun", "super90"};
+  String [] rifles = {"M14", "M4", "AK47", "rifle", "PSG-1"};
+  String [] heavy = {"M61Vulcan"};
+  Weapon exhibit;
   
   Shop() {
    shopState = ShopSwitch.PISTOLS;
+   exhibit = new Weapon("pistol");
   }
   
   void print() {
@@ -36,7 +44,7 @@ class Shop {
     
     float buttonWi = 0.14*width;
     float buttonHe = 0.05*height;
-    String [] names = {"Pistols", "SMGs", "Shotguns", "Rifles", "Heavy"};
+    
     
     for(int i = 0; i < 5; i++) {
       if(shopState.value() == i)
@@ -47,7 +55,7 @@ class Shop {
       rect(0.1*width + i*buttonWi, 0.1*height, buttonWi, buttonHe);
       
       fill(0);
-      text(names[i], 0.1*width + i*buttonWi, 0.14*height);         
+      text(indexes[i], 0.1*width + i*buttonWi, 0.14*height);         
     }
     fill(255, 0, 0);
     rect(0.87*width, 0.1*height, 0.03*width, buttonHe);
@@ -56,37 +64,37 @@ class Shop {
       rect(0.15*width, 0.2*height + i*buttonHe*2, buttonWi, buttonHe);      
     }
     
+    rect(0.15*width, 0.7*height, buttonWi, buttonHe);  // "buy" button
+    
     fill(0);
     text("X", 0.875*width, 0.14*height);
     
     switch(shopState) {
       
       case PISTOLS: {
-        String[] args = {"pistol"};
-        writeWeapons(args);
+        writeWeapons(pistols);
         break;  
       }
       case SMGS: {
-        String[] args = {"mac", "mp5", "P90"};
-        writeWeapons(args);
+        writeWeapons(SMGs);
         break;
       }
       case SHOTGUNS: {
-        String[] args = {"shotgun", "super90"};
-        writeWeapons(args);
+        writeWeapons(shotguns);
         break; 
       }
       case RIFLES: {
-        String[] args = {"M14", "M4", "AK47", "rifle", "PSG-1"};
-        writeWeapons(args);
+        writeWeapons(rifles);
         break; 
       }
       case HEAVY: {
-        String[] args = {"M61Vulcan"};
-        writeWeapons(args);
+        writeWeapons(heavy);
         break; 
       }
-    }
+    }  
+    showExhibit();
+    
+    text("BUY", 0.2*width , 14.7*buttonHe);
   }
   
   void click() {
@@ -98,47 +106,49 @@ class Shop {
      if(point_in_rect(mouseX, mouseY, 0.87*width, 0.1*height, 0.03*width, 0.05*height)) {
           game.state = GameSwitch.MAP; 
      }
+     if(point_in_rect(mouseX, mouseY, 0.15*width, 0.7*height, 0.14*width, 0.05*height)) {
+        game.you.gun = exhibit;
+        playsound("overload.wav");
+     }
      switch(shopState) {
        case PISTOLS: {
          if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height, 0.14*width, 0.05*height)) {
-           game.you.gun = new Weapon("pistol"); 
+           exhibit = new Weapon("pistol"); 
          }
          break;
        }
        case SMGS: {
-         String[] names = {"mac", "mp5", "P90"};
-         for(int i = 0; i < names.length; i++) {
+         for(int i = 0; i < SMGs.length; i++) {
            if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, 0.14*width, 0.05*height)) {
-              game.you.gun = new Weapon(names[i]); 
+              exhibit = new Weapon(SMGs[i]); 
            }
          }
          break; 
        }
        case SHOTGUNS: {
-         if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height, 0.14*width, 0.05*height)) {
-            game.you.gun = new Weapon("shotgun"); 
-         }
-         if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + 0.1*height, 0.14*width, 0.05*height)) {
-            game.you.gun = new Weapon("super90"); 
+         for(int i = 0; i < shotguns.length; i++) {
+           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, 0.14*width, 0.05*height)) {
+              exhibit = new Weapon(shotguns[i]); 
+           }
          }
          break; 
        }
        case RIFLES: {
-         String[] names = {"M14", "M4", "AK47", "rifle", "PSG-1"};
-         for(int i = 0; i < names.length; i++) {
+         for(int i = 0; i < rifles.length; i++) {
            if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, 0.14*width, 0.05*height)) {
-              game.you.gun = new Weapon(names[i]); 
+              exhibit = new Weapon(rifles[i]); 
            }
          }
          break; 
        }
        case HEAVY: {
          if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height, 0.14*width, 0.05*height)) {
-            game.you.gun = new Weapon("M61Vulcan"); 
+            exhibit = new Weapon("M61Vulcan"); 
          }
          break; 
        }           
      } 
+
   }
   
   void key_down() {
@@ -166,5 +176,16 @@ class Shop {
     for(int i = 0; i < args.length; i++) {
        text(args[i], 0.15*width, 0.24*height + i*0.1*height);      
     }
+  }
+  
+  private void showExhibit() { 
+     text("name \t\t" + exhibit.name, width/2,height/4);
+     text("damage \t\t" + exhibit.damage, width/2,height/4 + 50);
+     text("accuracy \t\t" + int(exhibit.accuracy*100) + "%", width/2,height/4 + 100);
+     text("fire rate \t\t" + exhibit.fire_rate + " ms", width/2,height/4 + 150);
+     text("weight \t\t" + int(exhibit.weight*100) + "%", width/2,height/4 + 200);
+     text("max ammo \t\t" + exhibit.max_ammo, width/2,height/4 + 250);
+     text("bullets in shot \t\t" + exhibit.multiple, width/2,height/4 + 300);
+     text("cost \t\t" + exhibit.cost, width/2,height/4 + 350);
   }
 }

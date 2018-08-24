@@ -35,6 +35,7 @@ class Weapon {
  int multiple;
  int before;
  float weight;
+ int cost;
  
  Weapon(String n){
      name = n;
@@ -50,6 +51,7 @@ class Weapon {
            multiple = 1;
            weight = 0.05;
            id = 0;
+           cost = 0;
         }break;
         case "mac":
         {
@@ -60,6 +62,7 @@ class Weapon {
            multiple = 1;
            weight = 0.1;
            id = 1;
+           cost = 200;
         }break;
         case "shotgun":
         {
@@ -70,6 +73,7 @@ class Weapon {
            multiple = 5;
            weight = 0.5;
            id = 2;
+           cost = 600;
         }break;
         case "AK47":
         {
@@ -80,6 +84,7 @@ class Weapon {
            multiple = 1;
            weight = 0.4;
            id = 3;
+           cost = 1000;
         }break;
         case "rifle":
         {
@@ -90,6 +95,7 @@ class Weapon {
            multiple = 1;
            weight = 0.6;
            id = 4;
+           cost = 1400;
         }break;  
         case "super90":
         {
@@ -100,6 +106,7 @@ class Weapon {
            multiple = 4;
            weight = 0.5;
            id = 5;
+           cost = 750;
         }break;
         case "M4":
         {
@@ -110,6 +117,7 @@ class Weapon {
            multiple = 1;
            weight = 0.4;
            id = 6;
+           cost = 1000;
         }break;
         case "PSG-1":
         {
@@ -120,16 +128,18 @@ class Weapon {
            multiple = 1;
            weight = 0.7;
            id = 7;
+           cost = 1800;
         }break;
         case "P90":
         {
            damage = 1;
            fire_rate = 100;
-           accuracy = 0.5;
+           accuracy = 0.55;
            max_ammo = 50;
            multiple = 1;
            weight = 0.1;
            id = 8;
+           cost = 750;
         }break;
         case "M14":
         {
@@ -140,16 +150,18 @@ class Weapon {
            multiple = 1;
            weight = 0.4;
            id = 9;
+           cost = 500;
         }break;
         case "mp5":
         {
            damage = 1;
            fire_rate = 90;
-           accuracy = 0.5;
+           accuracy = 0.45;
            max_ammo = 30;
            multiple = 1;
            weight = 0.1;
            id = 10;
+           cost = 400;
         }break;
         case "M61Vulcan":
         {
@@ -160,6 +172,7 @@ class Weapon {
            multiple = 1;
            weight = 0.9;
            id = 11;
+           cost = 2000;
         }break;
         default:
         {
@@ -171,6 +184,7 @@ class Weapon {
            weight = 0.05;
            name = "pistol";
            id = 0;
+           cost = 0;
         }break;
      }
      before = millis() + 750 - fire_rate;

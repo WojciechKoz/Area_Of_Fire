@@ -172,7 +172,7 @@ class LocalPlayer extends Player {
     keys.clear();
   }
   
-  void onDeath() {
+  void clearMove() {
      keys.clear();
      shoots = false;
      run = false;
