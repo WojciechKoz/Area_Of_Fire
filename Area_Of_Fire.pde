@@ -22,7 +22,7 @@ Balls miniGame;
 
 void setup() { 
   //fullScreen(P3D, SPAN);
-  size(900, 700, P2D); // trudno testować multiplayer na fullscreenie
+  size(1000, 800, P2D); // trudno testować multiplayer na fullscreenie
   font = createFont("Arial", 30);
   background(100, 70, 130);
   cursor(CROSS);
@@ -53,7 +53,7 @@ void mouseReleased() {
      case balls:
        miniGame.player.shoots = false; break;
      case game:
-        game.you.shoots = false;
+       game.mouseUp(); 
   }
 }
 
@@ -65,7 +65,7 @@ void mousePressed() {
      case balls:
        miniGame.player.shoots = true; break;
      case game:
-        game.you.shoots = true;
+       game.mouseDown(); 
   }
 }
 
@@ -85,7 +85,7 @@ void keyPressed() {
 void keyReleased() {
   switch(GP) {
     case balls:
-      miniGame.keys_up(); break;
+    miniGame.keys_up(); break;
     case game:
       game.keys_up(); 
   }

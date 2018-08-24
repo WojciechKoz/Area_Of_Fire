@@ -13,6 +13,7 @@ interface MessageReceiver {
    void receivedSetHp(int playerId, int hp);
    void receivedDisconnect(int playerId);
    void receivedChatMessage(String msg);
+   void receivedColor(int playerId, int teamColor);
 }
 
 private enum ReceivedMessageType {
@@ -22,6 +23,7 @@ private enum ReceivedMessageType {
   SET_HP,
   DISCONNECT,
   CHAT,
+  TEAM,
 }
 
 class Network {
@@ -29,6 +31,7 @@ class Network {
     private final int SEND_MOVE = 1;
     private final int SEND_SHOT = 2;
     private final int SEND_CHAT = 3;
+    private final int SEND_COLOR = 4;
     
     private final int BUFFER_LEN = 4096;
   
@@ -75,6 +78,18 @@ class Network {
         ex.printStackTrace();
       }
     }
+      
+    public void sendTeamColor(int teamColor) {
+      try {
+        packer.packArrayHeader(2);
+        packer.packInt(SEND_COLOR);
+        packer.packInt(teamColor);
+        packer.flush();
+      } catch(IOException ex) {
+        println("Failed sending a TEAM message");
+        ex.printStackTrace();
+      }
+    }
     
     public void sendState(float x, float y, boolean crouch, boolean run, int gunId, ArrayList<Point> endsOfBullet) {
         if(! client.active()) {
@@ -116,7 +131,7 @@ class Network {
     
     Network(MessageReceiver mr, String nickname) {
         this.mr = mr;
-        client = new Client(Area_Of_Fire.this, "35.228.141.175", 7543);
+        client = new Client(Area_Of_Fire.this, "127.0.0.1", 7543);
         
         if(!client.active()) {
           println("Could not connect to server");
@@ -260,6 +275,15 @@ class Network {
           String message = unpacker.unpackString();
           
           mr.receivedChatMessage(message);
+          break;
+        }   
+        
+        case TEAM: { 
+          assert unpacker.unpackArrayHeader() == 2;
+          int playerId = unpacker.unpackInt();
+          int teamColor = unpacker.unpackInt();
+          
+          mr.receivedColor(playerId, teamColor);
           break;
         }
       }

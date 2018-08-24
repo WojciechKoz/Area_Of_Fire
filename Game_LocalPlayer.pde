@@ -151,10 +151,27 @@ class LocalPlayer extends Player {
   }
   
   void print_yourself() {
-     fill(255, 0, 0);
+     if(team == Teams.RED)
+       fill(255, 0, 0);
+     else
+       fill(0, 0, 255);
      
      ellipse(width/2 - relative.x, height/2 - relative.y, 2*radius, 2*radius); 
   }
   
   
+  // TODO: comment what that does
+  void respawnState(Map map) {
+    max_hp = 5;
+    hp = max_hp;
+    gun = new Weapon("pistol");
+    
+    if(team == Teams.RED) {
+      x = map.redRespawn.x;
+      y = map.redRespawn.y;
+    } else {
+      x = map.blueRespawn.x;
+      y = map.blueRespawn.y;
+    }
+  } 
 }

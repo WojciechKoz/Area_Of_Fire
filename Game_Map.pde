@@ -5,6 +5,8 @@ class Map {
   float _height;
   ArrayList<Wall> walls = new ArrayList<Wall>();
   Point relative = new Point(0,0);
+  Point blueRespawn;
+  Point redRespawn;
   
   void add_rect(Point corner1, Point corner2) {
     walls.add(new Wall(corner1, new Point(corner2.x, corner1.y), corner2));
@@ -20,6 +22,9 @@ class Map {
     add_rect(new Point(260, 480), new Point(350, 700)); 
     add_rect(new Point(770, 480), new Point(710, 700));
     add_rect(new Point(360, 200), new Point(670, 300));
+    
+    blueRespawn = new Point(80, 300);
+    redRespawn = new Point(900, 300);
   }
   
   void print_map(Player observer, Collection<RemotePlayer> remotePlayers) {

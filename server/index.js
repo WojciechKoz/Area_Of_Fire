@@ -23,6 +23,7 @@ const MSGS_SEND = {
 	SET_HP: 3,
 	PLAYER_DISCONNECT: 4,
 	CHAT: 5,
+	SET_TEAM: 6,
 };
 
 const MSGS_RECEIVE = {
@@ -30,6 +31,7 @@ const MSGS_RECEIVE = {
 	PLAYER_MOVE: 1,
 	SHOT_WEAPON: 2,
 	CHAT: 3,
+	SET_TEAM: 4,
 }
 
 var _lastClientId = 1;
@@ -208,6 +210,12 @@ handleMessage[MSGS_RECEIVE.CHAT] = function(client, arg) {
 	}
 
 	sendToAll(MSGS_SEND.CHAT, [`${client.nickname}: ${arg}`]);
+}
+handleMessage[MSGS_RECEIVE.SET_TEAM] = function(client, arg) {
+	arg = arg | 0;
+
+	console.log(`Changing team of ${client.clientId} to ${arg} (${(arg == 0) ? 'blue' : (arg == 1) ? 'red' : 'not valid team id'})`);
+	sendToAllExcept(client.clientId, MSGS_SEND.SET_TEAM, [client.clientId, arg]);
 }
 
 
