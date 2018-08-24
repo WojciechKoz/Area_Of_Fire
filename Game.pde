@@ -21,7 +21,7 @@ class Game implements MessageReceiver {
       map = new Map(); 
       you = new LocalPlayer();
       network = new Network(this, you.nick);
-      state = GameSwitch.SHOP;
+      state = GameSwitch.NEW;
       bluePoints = 0;
       redPoints = 0;
    }
@@ -62,7 +62,7 @@ class Game implements MessageReceiver {
      remotePlayer.crouch = crouch;
      remotePlayer.run = run;
      
-     remotePlayer.receivedMove();
+    // remotePlayer.receivedMove();
 
      if(remotePlayer.gun.id != gunId)
        remotePlayer.gun = new Weapon(Weapons.values()[gunId].getName());
@@ -184,10 +184,6 @@ class Game implements MessageReceiver {
   
   void mouseUp() {
     switch(state) {
-      case NEW: {
-        if(point_in_rect(mouseX, mouseY, 
-        
-      }
       case MAP:
          game.you.shoots = false; break;
        
@@ -196,6 +192,23 @@ class Game implements MessageReceiver {
   
   void mouseDown() {
     switch(state) {
+       case NEW: {
+        if(point_in_rect(mouseX, mouseY, 100, height/2, width/2 - 100, 250)) {
+          you.team = Teams.BLUE; 
+          you.x = map.blueRespawn.x;
+          you.y = map.blueRespawn.y;
+          state = GameSwitch.MAP;
+          network.sendTeamColor(0);
+        }
+        if(point_in_rect(mouseX, mouseY, width/2, height/2, width/2 - 100, 250)) {
+          you.team = Teams.RED; 
+          you.x = map.redRespawn.x;
+          you.y = map.redRespawn.y;
+          state = GameSwitch.MAP;
+          network.sendTeamColor(1);
+        }
+        break;
+      }
        case MAP:
          game.you.shoots = true; break;
          

@@ -15,18 +15,20 @@ abstract class Player {
   Point relative = new Point(0,0);
   
   Player() {
-    x = 300;
-    y = 330;
+    x = -2000;
+    y = -2000;
     
     gun = new Weapon("M4");
     hp = max_hp;
     run = false;
     crouch = false;
     nick = "";
+    team = Teams.NEUTRAL;
   }
 }
 
 enum Teams {
-  RED, 
   BLUE,
+  RED,
+  NEUTRAL,
 };

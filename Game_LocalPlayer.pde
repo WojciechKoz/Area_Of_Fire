@@ -150,7 +150,10 @@ class LocalPlayer extends Player {
   }
   
   void print_yourself() {
-     fill(255, 0, 0);
+     if(team == Teams.RED)
+       fill(255, 0, 0);
+     else
+       fill(0, 0, 255);
      
      ellipse(width/2 - relative.x, height/2 - relative.y, 2*radius, 2*radius); 
   }

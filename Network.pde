@@ -15,12 +15,14 @@ private enum ReceivedMessageType {
   NEW_PLAYER,
   PLAYER_MOVE,
   SHOT,
+  TEAM,
 }
 
 class Network {
     private final int SEND_SET_NICKNAME = 0;
     private final int SEND_MOVE = 1;
     private final int SEND_SHOT = 2;
+    private final int SEND_COLOR = 3;
     
     private final int BUFFER_LEN = 4096;
   
@@ -52,6 +54,13 @@ class Network {
         }
       }
       endsOfBullet.clear();
+    }
+    
+    public void sendTeamColor(int teamColor) throws IOException {
+        packer.packArrayHeader(2);
+        packer.packInt(SEND_COLOR);
+        packer.packInt(teamColor);
+        packer.flush();
     }
     
     public void sendState(float x, float y, boolean crouch, boolean run, int gunId, ArrayList<Point> endsOfBullet) {
@@ -196,7 +205,15 @@ class Network {
           }
           mr.receivedShot(playerId, receivedShots);
           break;
-        }       
+        }   
+        case TEAM: { 
+          assert unpacker.unpackArrayHeader() == 2;
+          int playerId = unpacker.unpackInt();
+          int teamColor = unpacker.unpackInt();
+          
+          mr.receivedColor(playerId, teamColor);
+          break;
+        }
       }
     }
 }
