@@ -94,6 +94,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
      
      if(you.hp <= 0) {
        state = GameSwitch.DEAD;
+       you.onDeath();
      }  
      
      if(hp <= 0) {  
@@ -152,9 +153,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
 
 
 
-  void printInterface() {
-
-    
+  void printInterface() {   
     noStroke();
     switch(state) {
       case NEW: {
@@ -186,6 +185,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
         break;
       }
       case DEAD: {
+        textSize(30);
         background(100, 200, 200);
         
         fill(0);
@@ -246,7 +246,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
   
   void keys_typed(KeyEvent ev) {
     if(writingChatMessage == null) {
-      if(ev.getKey() == 't') {
+      if(ev.getKey() == 't' || ev.getKey() == 'T'  ) {
         writingChatMessage = new ChatMessage(this);
       }
         

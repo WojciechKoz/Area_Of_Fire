@@ -169,5 +169,13 @@ class LocalPlayer extends Player {
       x = map.blueRespawn.x;
       y = map.blueRespawn.y;
     }
-  } 
+    keys.clear();
+  }
+  
+  void onDeath() {
+     keys.clear();
+     shoots = false;
+     run = false;
+     crouch = false; 
+  }
 }
