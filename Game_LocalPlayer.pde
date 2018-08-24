@@ -159,11 +159,7 @@ class LocalPlayer extends Player {
      ellipse(width/2 - relative.x, height/2 - relative.y, 2*radius, 2*radius); 
   }
   
-  
-  // TODO: comment what that does
-  void respawnState(Map map) {
-    max_hp = 5;
-    hp = max_hp;
+  void onRespawn(Map map) {
     gun = new Weapon("pistol");
     
     if(team == Teams.RED) {

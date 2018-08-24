@@ -280,15 +280,17 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
        case NEW: {
         if(point_in_rect(mouseX, mouseY, 100, height/2, width/2 - 100, 250)) {
           you.team = Teams.BLUE; 
-          you.respawnState(map);
+          you.onRespawn(map);
           state = GameSwitch.MAP;
           network.sendTeamColor(0);
+          network.sendRespawn();
         }
         if(point_in_rect(mouseX, mouseY, width/2, height/2, width/2 - 100, 250)) {
           you.team = Teams.RED; 
-          you.respawnState(map);
+          you.onRespawn(map); 
           state = GameSwitch.MAP;
           network.sendTeamColor(1);
+          network.sendRespawn();
         }
         break;
       }
@@ -296,8 +298,9 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
          game.you.shoots = true; break;
        case DEAD: {
          if(point_in_rect(mouseX, mouseY, width/3, height/3, width/3, height/3)) {
-          you.respawnState(map);
+          you.onRespawn(map);
           state = GameSwitch.MAP;
+          network.sendRespawn();
          }
          break;
        }

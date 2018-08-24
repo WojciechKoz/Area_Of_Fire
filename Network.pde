@@ -32,6 +32,7 @@ class Network {
     private final int SEND_SHOT = 2;
     private final int SEND_CHAT = 3;
     private final int SEND_COLOR = 4;
+    private final int SEND_RESPAWN = 5;
     
     private final int BUFFER_LEN = 4096;
   
@@ -87,6 +88,18 @@ class Network {
         packer.flush();
       } catch(IOException ex) {
         println("Failed sending a TEAM message");
+        ex.printStackTrace();
+      }
+    }
+    
+    public void sendRespawn() {
+      try {
+        packer.packArrayHeader(2);
+        packer.packInt(SEND_RESPAWN); // (int = 5)
+        packer.packArrayHeader(0);
+        packer.flush();
+      } catch(IOException ex) {
+        println("Failed sending a RESPAWN message");
         ex.printStackTrace();
       }
     }
