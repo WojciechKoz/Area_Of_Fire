@@ -4,7 +4,6 @@ public enum GameSwitch {
   MAP,
   SHOP,
   DEAD,
-  STATS,
 };
 
 class Game implements MessageReceiver, TypedChatMessageReceiver {
@@ -15,6 +14,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
    ChatMessage writingChatMessage;
    GameSwitch state = GameSwitch.NEW;
    Shop shop;
+   Stats stats = new Stats(this);
    int bluePoints = 0, redPoints = 0;
    
    Network network;
@@ -135,6 +135,10 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
      } 
    }
    
+   void receivedStats(ArrayList<ReceivedPlayerStats> playerStats) {
+     stats.receivedStats(playerStats); 
+   }
+   
    void frame() {
     network.tick();
     if(state == GameSwitch.MAP)
@@ -199,6 +203,8 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
         break;
       }
     }
+    
+    stats.printIfNeeded();
   }
   
   void mouseUp() {
@@ -268,6 +274,9 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
         return;
       }
     }
+    
+    if(key == TAB)
+      stats.holding_tab = true;
 
     switch(state) {
       case MAP: {
@@ -311,6 +320,10 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
   // ####################################  keyUp
   
   void keys_up() {
+    if(key == TAB)
+      stats.holding_tab = false;
+      
+      
     switch(state) {
       case MAP: {
        if(key == 'A' || key == 'a') 

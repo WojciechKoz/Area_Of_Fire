@@ -24,6 +24,7 @@ const MSGS_SEND = {
 	PLAYER_DISCONNECT: 4,
 	CHAT: 5,
 	SET_TEAM: 6,
+	STATS: 7,
 };
 
 const MSGS_RECEIVE = {
@@ -128,6 +129,28 @@ function weaponDamage(weaponId) {
 	return weaponDamages[weaponId] || 1;
 }
 
+function sendStats(client) {
+	var stats = allClients.filter(el => el != null).map(c => [
+		(client.clientId == c.clientId) ? -1 : c.clientId,
+		c.stats.kills,
+		c.stats.deaths]);
+
+	console.log(`Sending stats to ${client.clientId}: ${JSON.stringify(stats)}`)
+	messageToClient(client, MSGS_SEND.STATS, stats);
+}
+
+function sendStatsToAll() {
+	allClients.forEach(client => sendStats(client));
+}
+
+function playerDied({died, shooter}) {
+	console.log(`Player ${died.clientId} has died`)
+	died.stats.deaths += 1;
+	shooter.stats.kills += 1;
+
+	sendStatsToAll();
+}
+
 function decreaseHp({ hit, shooter }) {
 	var damage = weaponDamage(shooter.weapon);
 	console.log(`Decreased hp of ${hit.clientId} from ${hit.hp} to ${hit.hp - damage}`);
@@ -140,8 +163,9 @@ function decreaseHp({ hit, shooter }) {
 		messageToClient(client, MSGS_SEND.SET_HP, [hitId, hit.hp, shooterId]);
 	});
 
-	//if(hit.hp <= 0)
-		//getRidOf(hit);
+	if(hit.hp <= 0) {
+		playerDied({ died: hit, shooter: shooter });
+  }
 }
 
 function handleShot(shootingClient, bulletEnd) {
@@ -227,7 +251,7 @@ handleMessage[MSGS_RECEIVE.RESPAWN] = function(client, arg) {
 	console.log(`Respawning ${client.clientId}`);
 
 	client.hp = 5;
-	
+
 	sendToAllExcept(client.clientId, MSGS_SEND.SET_HP, [client.clientId, client.hp]);
 	messageToClient(client, MSGS_SEND.SET_HP, [-1, client.hp]);
 }
@@ -273,11 +297,17 @@ var server = net.createServer(function(socket) {
 		queuedMessages: [],
 		team: null,
 		socket,
+		stats: {
+			kills: 0,
+			deaths: 0,
+		},
 	}
 
 	sendGameStateToNewPlayer(clientInfo);
 
 	allClients[clientInfo.clientId] = clientInfo;
+
+	sendStatsToAll();
 
 	var msgpackStream = new msgpack.Stream(socket);
 	msgpackStream.addListener('msg', function(arr) {

@@ -14,6 +14,7 @@ interface MessageReceiver {
    void receivedDisconnect(int playerId);
    void receivedChatMessage(String msg);
    void receivedColor(int playerId, int teamColor);
+   void receivedStats(ArrayList<ReceivedPlayerStats> stats);
 }
 
 private enum ReceivedMessageType {
@@ -24,6 +25,7 @@ private enum ReceivedMessageType {
   DISCONNECT,
   CHAT,
   TEAM,
+  STATS,
 }
 
 class Network {
@@ -298,6 +300,24 @@ class Network {
           
           mr.receivedColor(playerId, teamColor);
           break;
+        }
+        
+        case STATS: {
+          ArrayList<ReceivedPlayerStats> stats = new ArrayList<ReceivedPlayerStats>();
+          
+          int len = unpacker.unpackArrayHeader();
+          for(int i = 0; i < len; i++) {
+            ReceivedPlayerStats playerStats = new ReceivedPlayerStats();
+            stats.add(playerStats);
+            
+            assert unpacker.unpackArrayHeader() == 3;
+            playerStats.playerId = unpacker.unpackInt();
+            playerStats.kills = unpacker.unpackInt();
+            playerStats.deaths = unpacker.unpackInt();
+          }
+          
+          mr.receivedStats(stats);
+          break; 
         }
       }
     }
