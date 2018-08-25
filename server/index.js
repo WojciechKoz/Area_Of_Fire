@@ -273,6 +273,8 @@ function getRidOf(client) {
 		clearTimeout(client.socket.disconnectTimeout);
 
 	sendToAllExcept(client.clientId, MSGS_SEND.PLAYER_DISCONNECT, [client.clientId]);
+
+	sendStatsToAll();
 }
 
 var server = net.createServer(function(socket) {
