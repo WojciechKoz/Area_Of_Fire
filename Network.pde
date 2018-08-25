@@ -39,6 +39,9 @@ class Network {
     private final int BUFFER_LEN = 4096;
   
     private byte[] buffer = new byte[BUFFER_LEN];
+    
+    private final long MAX_MS_BETWEEN_SENT_MESSAGES = 5000;
+    private long lastSentMessageTime;
 
     private Client client;
   
@@ -48,11 +51,17 @@ class Network {
     
     private ReceivedMessageType[] messageTypeValues = ReceivedMessageType.values();
     
+    private void updateLastSent() {
+      lastSentMessageTime = System.currentTimeMillis();
+    }
+    
     private void sendNickname(String nickname) throws IOException {
-        packer.packArrayHeader(2);
-        packer.packInt(SEND_SET_NICKNAME);
-        packer.packString(nickname);
-        packer.flush();
+      updateLastSent();
+      
+      packer.packArrayHeader(2);
+      packer.packInt(SEND_SET_NICKNAME);
+      packer.packString(nickname);
+      packer.flush();
     }
     
     private void packShots(ArrayList<Point> endsOfBullet) {
@@ -69,7 +78,7 @@ class Network {
     }
     
     public void sendChatMessage(String msg) {
-      println("message", msg);
+      updateLastSent();
       
       try {
         packer.packArrayHeader(2);
@@ -83,6 +92,8 @@ class Network {
     }
       
     public void sendTeamColor(int teamColor) {
+      updateLastSent();
+      
       try {
         packer.packArrayHeader(2);
         packer.packInt(SEND_COLOR);
@@ -95,6 +106,8 @@ class Network {
     }
     
     public void sendRespawn() {
+      updateLastSent();
+      
       try {
         packer.packArrayHeader(2);
         packer.packInt(SEND_RESPAWN); // (int = 5)
@@ -107,36 +120,51 @@ class Network {
     }
     
     public void sendState(float x, float y, boolean crouch, boolean run, int gunId, ArrayList<Point> endsOfBullet) {
-        if(! client.active()) {
-          println("Not connected");
-          return;
-        }     
+      updateLastSent();
+    
+      if(! client.active()) {
+        println("Not connected");
+        return;
+      }     
+      
+      short flags = 0;
+      flags |= ((crouch ? 1 : 0) << 0);
+      flags |= ((run ? 1 : 0) << 1);
+      
+      try {
+        packer.packArrayHeader(endsOfBullet.size() > 0 ? 4 : 2);
         
-        short flags = 0;
-        flags |= ((crouch ? 1 : 0) << 0);
-        flags |= ((run ? 1 : 0) << 1);
+        packer.packInt(SEND_MOVE);
+        packer.packArrayHeader(4); 
+        packer.packFloat(x); 
+        packer.packFloat(y); 
+        packer.packShort(flags); 
+        packer.packInt(gunId);
         
-        try {
-          packer.packArrayHeader(endsOfBullet.size() > 0 ? 4 : 2);
-          
-          packer.packInt(SEND_MOVE);
-          packer.packArrayHeader(4); 
-          packer.packFloat(x); 
-          packer.packFloat(y); 
-          packer.packShort(flags); 
-          packer.packInt(gunId);
-          
-          if(endsOfBullet.size() > 0) {
-            packer.packInt(SEND_SHOT);
-            packer.packArrayHeader(endsOfBullet.size() * 2);
-            packShots(endsOfBullet); 
-          }
-          
-          packer.flush();
-        } catch (IOException ex) {
-          println("Failed sending a move packet");
-          ex.printStackTrace();
+        if(endsOfBullet.size() > 0) {
+          packer.packInt(SEND_SHOT);
+          packer.packArrayHeader(endsOfBullet.size() * 2);
+          packShots(endsOfBullet); 
         }
+        
+        packer.flush();
+      } catch (IOException ex) {
+        println("Failed sending a move packet");
+        ex.printStackTrace();
+      }
+    }
+    
+    private void sendPing() {
+      updateLastSent();
+      
+      println("sending ping!");
+      
+      try {
+        packer.packArrayHeader(0);
+        packer.flush();
+      } catch(IOException ex) {
+        println("Failed sending a ping packet"); 
+      }
     }
     
     public void close() {
@@ -145,26 +173,34 @@ class Network {
     }
     
     Network(MessageReceiver mr, String nickname) {
-        this.mr = mr;
-        client = new Client(Area_Of_Fire.this, "area-of-fire.baraniecki.eu", 7543);
-        
-        if(!client.active()) {
-          println("Could not connect to server");
-          return;
-        }
-        
-        packer = MessagePack.newDefaultPacker(client.output);
-        
-        try {
-          sendNickname(nickname);
-        } catch(IOException e) {
-          println("Exception while sending nickname, disconnecting");
-          e.printStackTrace();
-          client.stop();
-        }
+      this.mr = mr;
+      client = new Client(Area_Of_Fire.this, "area-of-fire.baraniecki.eu", 7543);
+      
+      if(!client.active()) {
+        println("Could not connect to server");
+        return;
+      }
+      
+      packer = MessagePack.newDefaultPacker(client.output);
+      
+      try {
+        sendNickname(nickname);
+      } catch(IOException e) {
+        println("Exception while sending nickname, disconnecting");
+        e.printStackTrace();
+        client.stop();
+      }
+    }
+    
+    private void pingIfNeeded() {
+      if(System.currentTimeMillis() > lastSentMessageTime + MAX_MS_BETWEEN_SENT_MESSAGES) {
+        sendPing();
+      }
     }
     
     public void tick() {
+      pingIfNeeded();
+      
       while(client.available() > 0) {
         int read = client.readBytes(buffer);
         try {

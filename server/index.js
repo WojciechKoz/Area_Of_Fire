@@ -130,10 +130,25 @@ function weaponDamage(weaponId) {
 }
 
 function sendStats(client) {
-	var stats = allClients.filter(el => el != null).map(c => [
-		(client.clientId == c.clientId) ? -1 : c.clientId,
-		c.stats.kills,
-		c.stats.deaths]);
+	var stats = allClients
+		.filter(el => el != null)
+		.map(c => [
+			(client.clientId == c.clientId) ? -1 : c.clientId,
+			c.stats.kills,
+			c.stats.deaths])
+
+	// Sort in descending order
+	stats.sort((a, b) => {
+		var a_kills = a[1];
+		var a_deaths = a[2];
+		var a_score = a_kills - a_deaths;
+
+		var b_kills = b[1];
+		var b_deaths = b[2];
+		var b_score = b_kills - b_deaths;
+
+		return b_score - a_score;
+	})
 
 	console.log(`Sending stats to ${client.clientId}: ${JSON.stringify(stats)}`)
 	messageToClient(client, MSGS_SEND.STATS, stats);
