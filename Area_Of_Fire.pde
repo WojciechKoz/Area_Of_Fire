@@ -69,6 +69,13 @@ void mousePressed() {
   }
 }
 
+void mouseMoved() {
+  switch(GP) {
+     case game:
+       game.mouseMove(); break;
+  }
+}
+
 void keyPressed() {
   switch(GP) {
     case balls:

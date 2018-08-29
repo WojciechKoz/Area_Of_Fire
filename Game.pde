@@ -250,6 +250,14 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
      
   }
   
+  void mouseMove() {
+    switch(state) {
+       case SHOP: {
+          shop.moveMouse(); 
+       }
+    }
+  }
+  
   void keys_typed(KeyEvent ev) {
     if(writingChatMessage == null) {
       if(ev.getKey() == 't' || ev.getKey() == 'T'  ) {

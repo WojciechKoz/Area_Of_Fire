@@ -25,6 +25,7 @@ class Shop {
   String [] shotguns = {"shotgun", "super90"};
   String [] rifles = {"M14", "M4", "AK47", "rifle", "PSG-1"};
   String [] heavy = {"M61Vulcan"};
+  boolean [] hovered = {false, false, false, false, false};
   Weapon exhibit;
   
   Shop() {
@@ -32,43 +33,31 @@ class Shop {
    exhibit = new Weapon("pistol");
   }
   
+  private float buttonHeight() {
+     return height*0.05; 
+  }
+  
+  private float buttonWidth() {
+     return width*0.14; 
+  }
+  
   void print() {
-    fill(100, 0, 0);
-    rect(0.1*width, 0.1*height, 0.8*width, 0.8*height); // shop background
-     
-    // buttons
+    fill(color(0x62, 0x46, 0x40, 213));
+    rect(0.1*width, 0.1*height, 0.8*width, 0.8*height, 20); // shop background
     
     stroke(0);
     strokeWeight(2);
     textSize(30);
     
-    float buttonWi = 0.14*width;
-    float buttonHe = 0.05*height;
-    
+    textAlign(CENTER, CENTER);
     
     for(int i = 0; i < 5; i++) {
-      if(shopState.value() == i)
-        fill(50, 50, 255);
-      else
-        fill(255, 0, 0);
-        
-      rect(0.1*width + i*buttonWi, 0.1*height, buttonWi, buttonHe);
-      
-      fill(0);
-      text(indexes[i], 0.1*width + i*buttonWi, 0.14*height);         
-    }
-    fill(255, 0, 0);
-    rect(0.87*width, 0.1*height, 0.03*width, buttonHe);
-    
-    for(int i = 0; i < 5; i++) {
-      rect(0.15*width, 0.2*height + i*buttonHe*2, buttonWi, buttonHe);      
+      int _color = shopState.value() == i ? 140 : 230;    
+      printButton(indexes[i], 0.1*width + i*buttonWidth(), 0.1*height, _color);
     }
     
-    rect(0.15*width, 0.7*height, buttonWi, buttonHe);  // "buy" button
-    
-    fill(0);
-    text("X", 0.875*width, 0.14*height);
-    
+    printExit();
+
     switch(shopState) {
       
       case PISTOLS: {
@@ -91,64 +80,140 @@ class Shop {
         writeWeapons(heavy);
         break; 
       }
-    }  
-    showExhibit();
-    
-    text("BUY", 0.2*width , 14.7*buttonHe);
+    } 
+    textAlign(LEFT, CENTER);
   }
   
   void click() {
-     for(int i = 0; i < 5; i++) {
-       if(point_in_rect(mouseX, mouseY, 0.1*width + i*0.14*width, 0.1*height, 0.14*width, 0.05*height)) {
+     for(int i = 0; i < 5; i++) { // change of weapons type 
+       if(point_in_rect(mouseX, mouseY, 0.1*width + i*0.14*width, 0.1*height, buttonWidth(), buttonHeight())) {
           shopState = ShopSwitch.values()[i]; 
        }
      }
-     if(point_in_rect(mouseX, mouseY, 0.87*width, 0.1*height, 0.03*width, 0.05*height)) {
-          game.state = GameSwitch.MAP; 
+     
+     if(point_in_rect(mouseX, mouseY, 0.87*width, 0.1*height, 0.03*width, buttonHeight())) { // exit
+        game.state = GameSwitch.MAP; 
      }
-     if(point_in_rect(mouseX, mouseY, 0.15*width, 0.7*height, 0.14*width, 0.05*height)) {
-        game.you.gun = exhibit;
-        playsound("overload.wav");
-     }
-     switch(shopState) {
+     
+     switch(shopState) { // buying
        case PISTOLS: {
-         if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height, 0.14*width, 0.05*height)) {
-           exhibit = new Weapon("pistol"); 
+         if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height, buttonWidth(), buttonHeight())) {
+           game.you.gun = exhibit;
+           playsound("overload.wav");
          }
+         
          break;
        }
        case SMGS: {
          for(int i = 0; i < SMGs.length; i++) {
-           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, 0.14*width, 0.05*height)) {
-              exhibit = new Weapon(SMGs[i]); 
+           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, buttonWidth(), buttonHeight())) {
+             game.you.gun = exhibit;
+             playsound("overload.wav");
            }
          }
+         
          break; 
        }
        case SHOTGUNS: {
          for(int i = 0; i < shotguns.length; i++) {
-           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, 0.14*width, 0.05*height)) {
-              exhibit = new Weapon(shotguns[i]); 
+           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, buttonWidth(), buttonHeight())) {
+             game.you.gun = exhibit;
+             playsound("overload.wav");
+           } 
+         }
+         break; 
+       }
+       case RIFLES: {
+         for(int i = 0; i < rifles.length; i++) {
+           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, buttonWidth(), buttonHeight())) {
+             game.you.gun = exhibit;
+             playsound("overload.wav");
+           } 
+         }
+         break; 
+       }
+       case HEAVY: {
+           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height, buttonWidth(), buttonHeight())) {
+             game.you.gun = exhibit;
+             playsound("overload.wav");
+           }          
+         break;             
+       }
+     }  
+  }
+  
+  void moveMouse() {
+     switch(shopState) {
+       case PISTOLS: {
+         if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height, buttonWidth(), buttonHeight())) {
+           if(!hovered[0]) {
+             hovered[0] = true;
+           
+             exhibit = new Weapon("pistol"); 
+           }
+         } else {
+           hovered[0] = false; 
+         }
+         
+         break;
+       }
+       case SMGS: {
+         for(int i = 0; i < SMGs.length; i++) {
+           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, buttonWidth(), buttonHeight())) {
+             if(!hovered[i]) {
+               hovered[i] = true;
+             
+               exhibit = new Weapon(SMGs[i]); 
+             }
+           } else {
+             hovered[i] = false; 
+           }
+         }
+         
+         break; 
+       }
+       case SHOTGUNS: {
+         for(int i = 0; i < shotguns.length; i++) {
+           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, buttonWidth(), buttonHeight())) {
+             if(!hovered[i]) {
+               hovered[i] = true;
+             
+               exhibit = new Weapon(shotguns[i]); 
+             }
+           } else {
+             hovered[i] = false; 
            }
          }
          break; 
        }
        case RIFLES: {
          for(int i = 0; i < rifles.length; i++) {
-           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, 0.14*width, 0.05*height)) {
-              exhibit = new Weapon(rifles[i]); 
+           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height + i*0.1*height, buttonWidth(), buttonHeight())) {
+             if(!hovered[i]) {
+               hovered[i] = true;
+             
+               exhibit = new Weapon(rifles[i]); 
+             }
+           } else {
+             hovered[i] = false; 
            }
          }
          break; 
        }
        case HEAVY: {
-         if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height, 0.14*width, 0.05*height)) {
-            exhibit = new Weapon("M61Vulcan"); 
-         }
-         break; 
-       }           
-     } 
-
+           if(point_in_rect(mouseX, mouseY, 0.15*width, 0.2*height, buttonWidth(), buttonHeight())) {
+             if(!hovered[0]) {
+               hovered[0] = true;
+             
+               exhibit = new Weapon("M61Vulcan"); 
+             }
+           } else {
+             hovered[0] = false; 
+           }
+         
+         break;             
+       }
+     }
   }
   
   void key_down() {
@@ -172,20 +237,39 @@ class Shop {
     } 
   }
   
-  private void writeWeapons(String[] args) {
+  private void writeWeapons(String[] args) {  
     for(int i = 0; i < args.length; i++) {
-       text(args[i], 0.15*width, 0.24*height + i*0.1*height);      
-    }
+      int _color = hovered[i] ? 140 : 230; ;
+      printButton(args[i], 0.15*width, 0.2*height + i*0.1*height, _color);    
+      
+      if(hovered[i]) 
+        showExhibit();
+    }  
   }
   
+  private void printButton(String text, float x, float y, int _color) {
+    fill(255, _color, _color, 150);
+    rect(x, y, buttonWidth(), buttonHeight(), 20);
+    fill(0);
+    text(text, x + 0.5*buttonWidth(), y + 0.5*buttonHeight());  
+  }
+  
+  private void printExit() {
+    fill(255, 230, 230, 150);
+    rect(0.87*width, 0.1*height, 0.03*width, buttonHeight(), 20);
+       
+    fill(0);
+    text("X", 0.87*width + 0.015*width, 0.1*height + 0.5*buttonHeight());
+  }
+ 
   private void showExhibit() { 
-     text("name \t\t" + exhibit.name, width/2,height/4);
-     text("damage \t\t" + exhibit.damage, width/2,height/4 + 50);
-     text("accuracy \t\t" + int(exhibit.accuracy*100) + "%", width/2,height/4 + 100);
-     text("fire rate \t\t" + exhibit.fire_rate + " ms", width/2,height/4 + 150);
-     text("weight \t\t" + int(exhibit.weight*100) + "%", width/2,height/4 + 200);
-     text("max ammo \t\t" + exhibit.max_ammo, width/2,height/4 + 250);
-     text("bullets in shot \t\t" + exhibit.multiple, width/2,height/4 + 300);
-     text("cost \t\t" + exhibit.cost, width/2,height/4 + 350);
+     text("name " + exhibit.name, width/2,height/4);
+     text("damage " + exhibit.damage, width/2,height/4 + 50);
+     text("accuracy " + int(exhibit.accuracy*100) + "%", width/2,height/4 + 100);
+     text("fire rate " + exhibit.fire_rate + " ms", width/2,height/4 + 150);
+     text("weight " + int(exhibit.weight*100) + "%", width/2,height/4 + 200);
+     text("max ammo " + exhibit.max_ammo, width/2,height/4 + 250);
+     text("bullets in shot " + exhibit.multiple, width/2,height/4 + 300);
+     text("cost " + exhibit.cost, width/2,height/4 + 350);
   }
 }
