@@ -17,7 +17,7 @@ class ChatMessage {
     return "> " + message; 
   }
 
-  public void keys_typed(KeyEvent ev) {
+  public void keys_typed(processing.event.KeyEvent ev) {
     char ch = ev.getKey();
    
     if(message.length() >= 250)

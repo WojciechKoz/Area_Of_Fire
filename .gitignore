@@ -2,3 +2,4 @@ node_modules
 *.autosave
 tags
 application.*
+processing-*.*

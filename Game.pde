@@ -258,7 +258,7 @@ class Game implements MessageReceiver, TypedChatMessageReceiver {
     }
   }
   
-  void keys_typed(KeyEvent ev) {
+  void keys_typed(processing.event.KeyEvent ev) {
     if(writingChatMessage == null) {
       if(ev.getKey() == 't' || ev.getKey() == 'T'  ) {
         writingChatMessage = new ChatMessage(this);

@@ -11,14 +11,15 @@ PFont font;
 
 
 // parameters
-enum Game_position {game, balls, menu, input};
-Game_position GP = Game_position.menu;
+enum Game_position {autoupdate, game, balls, menu, input};
+Game_position GP = Game_position.autoupdate;
 
 String localnick = "default";
 
 Menu main = new Menu(); 
 Game game;
 Balls miniGame;
+AutoUpdate autoupdate = new AutoUpdate();
 
 void setup() { 
   //fullScreen(P3D, SPAN);
@@ -44,7 +45,9 @@ void draw() {
       game.frame(); break;
     case menu:
     case input:
-      main.show();
+      main.show(); break;
+    case autoupdate:
+      autoupdate.draw(); break;
   }
 }
 
@@ -99,7 +102,7 @@ void keyReleased() {
 }
 
 
-void keyTyped(KeyEvent ev) {
+void keyTyped(processing.event.KeyEvent ev) {
   switch(GP) {
     case game:
       game.keys_typed(ev);
