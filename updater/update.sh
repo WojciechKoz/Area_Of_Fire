@@ -17,4 +17,4 @@ elif [ $win == 1 ] && [ "$1" == --in-temp ]; then
     rsync() { "$update_tools_dir/rsync.exe" "$@"; }
 fi
 
-rsync -rtv rsync://area-of-fire.baraniecki.eu/update .
+rsync -rtv --info=progress2 rsync://area-of-fire.baraniecki.eu/update .
