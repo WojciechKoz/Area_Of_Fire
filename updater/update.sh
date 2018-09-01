@@ -9,7 +9,7 @@ fi
 if [ $win == 1 ] && [ "$1" != --in-temp ]; then
     update_tools_dir="$TMP/aof-update.$RANDOM$RANDOM$RANDOM"
     mkdir -p "$update_tools_dir"
-    cp -rv update/* "$update_tools_dir/"
+    cp -rv updater/* "$update_tools_dir/"
     cmd /c start "$update_tools_dir/busybox64.exe" ash "$update_tools_dir/update.sh" --in-temp "$update_tools_dir"
     exit $?
 elif [ $win == 1 ] && [ "$1" == --in-temp ]; then
