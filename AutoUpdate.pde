@@ -58,7 +58,7 @@ class AutoUpdate {
     
     try {
       boolean windows = File.separatorChar == '\\';
-      String extension = windows ? ".bat" : "";
+      String extension = windows ? ".bat" : ".sh";
       
       exec(dataPath("") + File.separator + ".." + File.separator + "updater" + File.separator + "update" + extension);
     } catch(Exception ex) {
