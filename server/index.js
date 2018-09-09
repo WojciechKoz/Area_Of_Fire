@@ -308,8 +308,6 @@ var server = net.createServer(function(socket) {
 
 	socket.setNoDelay(true);
 
-	setupTimeout(clientInfo);
-
 	var clientInfo = {
 		clientId: newClientId(),
 		nickname: null,
@@ -327,6 +325,8 @@ var server = net.createServer(function(socket) {
 			deaths: 0,
 		},
 	}
+
+	setupTimeout(clientInfo);
 
 	sendGameStateToNewPlayer(clientInfo);
 
