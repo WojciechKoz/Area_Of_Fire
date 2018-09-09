@@ -44,9 +44,20 @@ function newClientId() {
 var allClients = [];
 
 
+function setupTimeout(client) {
+	client.socket.disconnectTimeout = setTimeout(function() {
+		console.log(`Kicking client ${client.clientId} due to inactivity`);
+		getRidOf(client);
+	}, TIMEOUT_KICK);
+}
+
 // after TIMEOUT_KICK ms of no data a socket is considered disconnected.
-function resetTimeout(socket) {
-	socket.disconnectTimeout.refresh();
+function resetTimeout(client) {
+	if(client.socket.disconnectTimeout.refresh) { // Node >= 10
+		client.socket.disconnectTimeout.refresh();
+	} else {
+		setupTimeout(client);
+	}
 }
 
 function sendQueuedMessagesToClient(client) {
@@ -297,10 +308,7 @@ var server = net.createServer(function(socket) {
 
 	socket.setNoDelay(true);
 
-	socket.disconnectTimeout = setTimeout(function() {
-		console.log(`Kicking client ${clientInfo.clientId} due to inactivity`);
-		getRidOf(clientInfo);
-	}, TIMEOUT_KICK);
+	setupTimeout(clientInfo);
 
 	var clientInfo = {
 		clientId: newClientId(),
@@ -328,7 +336,7 @@ var server = net.createServer(function(socket) {
 
 	var msgpackStream = new msgpack.Stream(socket);
 	msgpackStream.addListener('msg', function(arr) {
-		resetTimeout(socket);
+		resetTimeout(clientInfo);
 
 		if(!Array.isArray(arr)) {
 			console.warn('Got a message that is not an array');
